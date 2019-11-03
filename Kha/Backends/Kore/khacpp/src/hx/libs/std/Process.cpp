@@ -165,7 +165,6 @@ static String TQuoted(const T *ptr, int len)
    return String::create( &quoted[0], qlen );
 }
 
-#if !defined(APPLETV) && !defined(HX_APPLEWATCH) && !defined(KORE_CONSOLE)
 static String quoteString(String v)
 {
    #ifdef HX_SMART_STRINGS
@@ -174,7 +173,7 @@ static String quoteString(String v)
    #endif
    return TQuoted(v.raw_ptr(),v.length);
 }
-#endif
+
 
 
 /**
@@ -499,9 +498,6 @@ int _hx_std_process_exit( Dynamic handle )
       return 0;
 
    return WEXITSTATUS(rval);
-   #else
-   hx::ExitGCFreeZone();
-   return 0;
    #endif
 }
 

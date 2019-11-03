@@ -156,6 +156,10 @@ class EmptyGraphics4 implements Graphics {
 		
 	}
 	
+	public function renderTargetsInvertedY(): Bool {
+		return false;
+	}
+	
 	public function setPipeline(pipeline: PipelineState): Void {
 		
 	}
@@ -165,22 +169,6 @@ class EmptyGraphics4 implements Graphics {
 	}
 
 	public function setInt(location: ConstantLocation, value: Int): Void {
-		
-	}
-
-	public function setInt2(location: ConstantLocation, value1: Int, value2: Int): Void {
-		
-	}
-
-	public function setInt3(location: ConstantLocation, value1: Int, value2: Int, value3: Int): Void {
-		
-	}
-
-	public function setInt4(location: ConstantLocation, value1: Int, value2: Int, value3: Int, value4: Int): Void {
-		
-	}
-
-	public function setInts(location: ConstantLocation, values: kha.arrays.Int32Array): Void {
 		
 	}
 

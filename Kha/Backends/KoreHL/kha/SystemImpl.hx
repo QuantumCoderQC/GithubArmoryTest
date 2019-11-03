@@ -94,17 +94,16 @@ class SystemImpl {
 	}
 
 	public static function getSystemId(): String {
-		final b: hl.Bytes = kore_get_system_id();
-		return @:privateAccess String.fromUTF8(b);
+		// return kore_get_system_id();
+		return 'HL';
 	}
 
 	public static function vibrate(ms:Int): Void {
-		kore_vibrate(ms);
+		//TODO: Implement
 	}
 
 	public static function getLanguage(): String {
-		final b: hl.Bytes = kore_get_language();
-		return @:privateAccess String.fromUTF8(b);
+		return "en"; //TODO: Implement
 	}
 
 	public static function requestShutdown(): Bool {
@@ -285,32 +284,27 @@ class SystemImpl {
 		System.dropFiles(filePath);
 	}
 
-	public static function copy(): hl.Bytes {
+	public static function copy(): String {
 		if (System.copyListener != null) {
-			final text = System.copyListener();
-			if (text == null) return null;
-			return StringHelper.convert(text);
+			return System.copyListener();
 		}
 		else {
 			return null;
 		}
 	}
 
-	public static function cut(): hl.Bytes {
+	public static function cut(): String {
 		if (System.cutListener != null) {
-			final text = System.cutListener();
-			if (text == null) return null;
-			return StringHelper.convert(text);
+			return System.cutListener();
 		}
 		else {
 			return null;
 		}
 	}
 
-	public static function paste(data: hl.Bytes): Void {
-		final text = @:privateAccess String.fromUTF8(data);
+	public static function paste(data: String): Void {
 		if (System.pasteListener != null) {
-			System.pasteListener(text);
+			System.pasteListener(data);
 		}
 	}
 
@@ -382,22 +376,6 @@ class SystemImpl {
 		return 1.0;
 	}
 
-	public static function login(): Void {
-
-	}
-
-	public static function automaticSafeZone(): Bool {
-		return true;
-	}
-
-	public static function setSafeZone(value: Float): Void {
-
-	}
-
-	public static function unlockAchievement(id: Int): Void {
-
-	}
-
 	@:hlNative("std", "init_kore") static function init_kore(title: hl.Bytes, width: Int, height: Int, samplesPerPixel: Int, vSync: Bool, windowMode: Int, windowFeatures: Int): Void { }
 	@:hlNative("std", "run_kore") static function run_kore(): Void { }
 	@:hlNative("std", "kore_init_audio") static function kore_init_audio(callCallback: Int->Void, readSample: Void->FastFloat, outSamplesPerSecond: hl.Ref<Int>): Void { }
@@ -406,8 +384,6 @@ class SystemImpl {
 	@:hlNative("std", "kore_get_window_width") static function kore_get_window_width(window: Int): Int { return 0; }
 	@:hlNative("std", "kore_get_window_height") static function kore_get_window_height(window: Int): Int { return 0; }
 	@:hlNative("std", "kore_get_system_id") static function kore_get_system_id(): hl.Bytes { return null; }
-	@:hlNative("std", "kore_vibrate") static function kore_vibrate(ms: Int): Void {}
-	@:hlNative("std", "kore_get_language") static function kore_get_language(): hl.Bytes { return null; }
 	@:hlNative("std", "kore_request_shutdown") static function kore_request_shutdown(): Void { }
 	@:hlNative("std", "kore_mouse_lock") static function kore_mouse_lock(windowId: Int): Void { }
 	@:hlNative("std", "kore_mouse_unlock") static function kore_mouse_unlock(windowId: Int): Void { }
@@ -425,7 +401,7 @@ class SystemImpl {
 	@:hlNative("std", "kore_register_sensor") static function kore_register_sensor(accelerometerChanged: Float->Float->Float->Void, gyroscopeChanged: Float->Float->Float->Void): Void { }
 	@:hlNative("std", "kore_register_callbacks") static function kore_register_callbacks(foreground: Void->Void, resume: Void->Void, pause: Void->Void, background: Void->Void, shutdown: Void->Void): Void { }
 	@:hlNative("std", "kore_register_dropfiles") static function kore_register_dropfiles(dropFiles: String->Void): Void { }
-	@:hlNative("std", "kore_register_copycutpaste") static function kore_register_copycutpaste(copy: Void->hl.Bytes, cut: Void->hl.Bytes, paste: hl.Bytes->Void): Void { }
+	@:hlNative("std", "kore_register_copycutpaste") static function kore_register_copycutpaste(copy: Void->String, cut: Void->String, paste: String->Void): Void { }
 	@:hlNative("std", "kore_system_change_resolution") static function kore_system_change_resolution(width: Int, height: Int): Void { }
 	@:hlNative("std", "kore_system_set_keepscreenon") static function kore_system_set_keepscreenon(on: Bool): Void { }
 	@:hlNative("std", "kore_system_load_url") static function kore_system_load_url(url: hl.Bytes): Void { }

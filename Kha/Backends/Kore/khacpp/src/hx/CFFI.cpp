@@ -185,9 +185,7 @@ String __hxcpp_get_kind(Dynamic inObject)
    return String::create(it->second.c_str(), it->second.size());
 }
 
-#ifndef __clang__
 #pragma warning( disable : 4290 )
-#endif
 #define THROWS throw(Dynamic)
 //#define THROWS
 
@@ -790,18 +788,6 @@ void hxcpp_alloc_field(hx::Object * arg1,int arg2,hx::Object * arg3)
    return alloc_field(arg1,arg2,arg3);
 }
 
-void alloc_field_numeric(hx::Object * arg1,int arg2,double arg3) THROWS
-{
-   //hx::InternalCollect();
-   if (!arg1) hx::Throw(HX_INVALID_OBJECT);
-   arg1->__SetField(__hxcpp_field_from_id(arg2),arg3, HX_PROP_DYNAMIC );
-}
-void hxcpp_alloc_field_numeric(hx::Object * arg1,int arg2,double arg3)
-{
-   return alloc_field_numeric(arg1,arg2,arg3);
-}
-
-
 
 hx::Object * val_field(hx::Object * arg1,int arg2) THROWS
 {
@@ -956,12 +942,6 @@ void gc_enter_blocking()
 void gc_exit_blocking()
 {
    hx::ExitGCFreeZone();
-}
-
-
-bool gc_try_blocking()
-{
-   return hx::TryGCFreeZone();
 }
 
 void gc_safe_point()

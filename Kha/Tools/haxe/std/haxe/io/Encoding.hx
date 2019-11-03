@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package haxe.io;
 
 /**
@@ -27,7 +26,6 @@ package haxe.io;
 **/
 enum Encoding {
 	UTF8;
-
 	/**
 		Output the string the way the platform represent it in memory. This is the most efficient but is platform-specific
 	**/

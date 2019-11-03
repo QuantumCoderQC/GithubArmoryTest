@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package python;
 
 import python.internal.UBuiltins;
@@ -28,10 +27,10 @@ import python.NativeIterator;
 import python.Syntax;
 
 @:native("dict")
-extern class Dict<K, V> {
-	function new():Void;
+extern class Dict<K,V> {
+	function new ():Void;
 
-	var length(get, never):Int;
+	var length(get,never):Int;
 	private inline function get_length():Int {
 		return UBuiltins.len(this);
 	}
@@ -55,13 +54,13 @@ extern class Dict<K, V> {
 	}
 
 	function clear():Void;
-	function copy():Dict<K, V>;
-	function items():DictView<Tuple2<K, V>>;
+	function copy():Dict<K,V>;
+	function items():DictView<Tuple2<K,V>>;
 	function keys():DictView<K>;
 	function pop(key:K, ?def:V):V;
-	function popitem():Tuple2<K, V>;
+	function popitem():Tuple2<K,V>;
 	function setdefault(key:K, ?def:V):V;
-	function update(d:Dict<K, V>):Void;
+	function update(d:Dict<K,V>):Void;
 	function values():DictView<V>;
 
 	inline function iter():NativeIterator<K> {
@@ -76,7 +75,7 @@ extern class Dict<K, V> {
 }
 
 extern class DictView<T> {
-	var length(get, never):Int;
+	var length(get,never):Int;
 	private inline function get_length():Int {
 		return UBuiltins.len(this);
 	}

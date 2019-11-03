@@ -19,13 +19,15 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+ package cs.internal;
 
-package cs.internal;
+@:unsafe @:keep @:native('haxe.lang.BoxedPointer') @:nativeGen class BoxedPointer
+{
+	@:readonly public var value(default,null):Pointer<Dynamic>;
 
-@:unsafe @:keep @:native('haxe.lang.BoxedPointer') @:nativeGen class BoxedPointer {
-	@:readonly public var value(default, null):Pointer<Dynamic>;
-
-	public function new(val) {
+	public function new(val)
+	{
 		this.value = val;
 	}
+
 }

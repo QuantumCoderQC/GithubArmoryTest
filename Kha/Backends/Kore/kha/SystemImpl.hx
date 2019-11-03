@@ -32,7 +32,6 @@ import kha.graphics4.DepthStencilFormat;
 @:headerCode('
 #include <Kore/pch.h>
 #include <Kore/System.h>
-#include <Kore/Input/Gamepad.h>
 #include <Kore/Input/Mouse.h>
 #include <Kore/Input/Pen.h>
 #include <Kore/Display.h>
@@ -278,23 +277,9 @@ class SystemImpl {
 		LoaderImpl.tick();
 		Scheduler.executeFrame();
 		System.render(framebuffers);
-		if (kha.kore.graphics4.Graphics.lastWindow != -1) {
-			var win = kha.kore.graphics4.Graphics.lastWindow;
-			untyped __cpp__('Kore::Graphics4::end(win);');
-		}
+		var win = kha.kore.graphics4.Graphics.lastWindow;
+		untyped __cpp__('Kore::Graphics4::end(win);');
 		kha.kore.graphics4.Graphics.lastWindow = -1;
-
-		if (gamepad1.connected && !checkGamepadConnected()) {
-			Gamepad.sendDisconnectEvent(0);
-		}
-		else if (!gamepad1.connected && checkGamepadConnected()) {
-			Gamepad.sendConnectEvent(0);
-		}
-	}
-
-	@:functionCode('return Kore::Gamepad::get(0)->connected();')
-	static function checkGamepadConnected(): Bool {
-		return true;
 	}
 
 	public static function keyDown(code: KeyCode): Void {
@@ -445,25 +430,6 @@ class SystemImpl {
 	}
 
 	@:functionCode('
-		Kore::System::login();
-	')
-	public static function login(): Void {
-
-	}
-
-	public static function loginevent(): Void {
-		if (System.loginListener != null) {
-			System.loginListener();
-		}
-	}
-
-	public static function logoutevent(): Void {
-		if (System.logoutListener != null) {
-			System.logoutListener();
-		}
-	}
-
-	@:functionCode('
 		Kore::WindowOptions window = convertWindowOptions(win);
 		Kore::FramebufferOptions framebuffer = convertFramebufferOptions(frame);
 		init_kore(name, width, height, &window, &framebuffer);
@@ -487,17 +453,5 @@ class SystemImpl {
 
 	public static function safeZone(): Float {
 		return untyped __cpp__('Kore::System::safeZone()');
-	}
-
-	public static function automaticSafeZone(): Bool {
-		return untyped __cpp__('Kore::System::automaticSafeZone()');
-	}
-
-	public static function setSafeZone(value: Float): Void {
-		untyped __cpp__('Kore::System::setSafeZone(value)');
-	}
-
-	public static function unlockAchievement(id: Int): Void {
-		untyped __cpp__('Kore::System::unlockAchievement(id)');
 	}
 }

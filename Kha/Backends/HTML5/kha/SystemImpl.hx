@@ -14,7 +14,6 @@ import js.html.DeviceOrientationEvent;
 import kha.graphics4.TextureFormat;
 import kha.input.Gamepad;
 import kha.input.Keyboard;
-import kha.input.KeyCode;
 import kha.input.Mouse;
 import kha.input.Sensor;
 import kha.input.Surface;
@@ -185,8 +184,7 @@ class SystemImpl {
 	}
 
 	public static function getLanguage(): String {
-		final lang = Browser.navigator.language;
-		return lang.substr(0, 2).toLowerCase();
+		return Browser.navigator.language;
 	}
 
 	public static function requestShutdown(): Bool {
@@ -197,6 +195,7 @@ class SystemImpl {
 	private static inline var maxGamepads: Int = 4;
 	private static var frame: Framebuffer;
 	private static var pressedKeys: Array<Bool>;
+	private static var leftMouseCtrlDown: Bool = false;
 	private static var keyboard: Keyboard = null;
 	private static var mouse: kha.input.Mouse;
 	private static var surface: Surface;
@@ -263,6 +262,27 @@ class SystemImpl {
 		document.addEventListener("cut", onCut);
 		document.addEventListener("paste", onPaste);
 
+		if (firefox) {
+			var canvas = getCanvasElement();
+			function onPreTextEvents(e: KeyboardEvent):Void {
+				if (!(e.ctrlKey || e.metaKey)) return;
+				var isEvent = e.keyCode == 67 || e.keyCode == 88 || e.keyCode == 86;
+				if (!isEvent) return;
+
+				var input = document.createTextAreaElement();
+				var onEvent = function(e: ClipboardEvent) {
+					document.body.removeChild(input);
+					canvas.focus();
+				};
+				if (e.keyCode == 67) input.oncopy = onEvent;
+				else if (e.keyCode == 88) input.oncut = onEvent;
+				else if (e.keyCode == 86) input.onpaste = onEvent;
+				document.body.appendChild(input);
+				input.select();
+			}
+			canvas.addEventListener("keydown", onPreTextEvents);
+		}
+
 		CanvasImage.init();
 		Scheduler.init();
 
@@ -283,6 +303,7 @@ class SystemImpl {
 		for (i in 0...pad.axes.length) {
 			if (pad.axes[i] != null) {
 				var axis = pad.axes[i];
+				if (i % 2 == 1) axis = -axis;
 				if (gamepadStates[pad.index].axes[i] != axis) {
 					gamepadStates[pad.index].axes[i] = axis;
 					gamepads[pad.index].sendAxisEvent(i, axis);
@@ -312,7 +333,7 @@ class SystemImpl {
 		#if (kha_debug_html5 || !canvas_id)
 		return cast Browser.document.getElementById("khanvas");
 		#else
-		return cast Browser.document.getElementById(Macros.canvasId());
+		return cast Browser.document.getElementById(kha.CompilerDefines.canvas_id);
 		#end
 	}
 
@@ -429,7 +450,7 @@ class SystemImpl {
 
 			Scheduler.executeFrame();
 
-			if (canvas.getContext != null) {
+			if (untyped canvas.getContext) {
 
 				// Lookup the size the browser is displaying the canvas.
 				//TODO deal with window.devicePixelRatio ?
@@ -652,7 +673,14 @@ class SystemImpl {
 
 		setMouseXY(event);
 		if (event.which == 1) { //left button
-			mouse.sendDownEvent(0, 0, mouseX, mouseY);
+			if (event.ctrlKey) {
+				leftMouseCtrlDown = true;
+				mouse.sendDownEvent(0, 1, mouseX, mouseY);
+			}
+			else {
+				leftMouseCtrlDown = false;
+				mouse.sendDownEvent(0, 0, mouseX, mouseY);
+			}
 
 			if (khanvas.setCapture != null)  {
 				khanvas.setCapture();
@@ -686,9 +714,13 @@ class SystemImpl {
 		else {
 			khanvas.ownerDocument.removeEventListener("mousemove", documentMouseMove, true);
 		}
-
-		mouse.sendUpEvent(0, 0, mouseX, mouseY);
-
+		if (leftMouseCtrlDown) {
+			mouse.sendUpEvent(0, 1, mouseX, mouseY);
+		}
+		else {
+			mouse.sendUpEvent(0, 0, mouseX, mouseY);
+		}
+		leftMouseCtrlDown = false;
 		insideInputEvent = false;
 	}
 
@@ -942,15 +974,8 @@ class SystemImpl {
 		insideInputEvent = true;
 		unlockSound();
 
-		switch (Keyboard.keyBehavior) {
-			case Default:
-				defaultKeyBlock(event);
-			case Full:
-				event.preventDefault();
-			case Custom(func):
-				if (func(cast event.keyCode)) event.preventDefault();
-			case None:
-		}
+		if ((event.keyCode < 112 || event.keyCode > 123) //F1-F12
+			&& (event.key != null && event.key.length != 1)) event.preventDefault();
 		event.stopPropagation();
 
 		// prevent key repeat
@@ -965,35 +990,9 @@ class SystemImpl {
 			event.preventDefault();
 			return;
 		}
-		var keyCode = fixedKeyCode(event);
-		keyboard.sendDownEvent(keyCode);
+
+		keyboard.sendDownEvent(cast event.keyCode);
 		insideInputEvent = false;
-	}
-
-	static function fixedKeyCode(event: KeyboardEvent): KeyCode {
-		return switch (event.keyCode) {
-			case 91, 93: Meta; // left/right in Chrome
-			case 186: Semicolon;
-			case 187: Equals;
-			case 189: HyphenMinus;
-			default:
-				cast event.keyCode;
-		}
-	}
-
-	static function defaultKeyBlock(e: KeyboardEvent):Void {
-		// block if ctrl key pressed
-		if (e.ctrlKey || e.metaKey) {
-			// except for cut-copy-paste
-			if (e.keyCode == 67 || e.keyCode == 88 || e.keyCode == 86) return;
-			e.preventDefault();
-			return;
-		}
-		// allow F-keys
-		if (e.keyCode >= 112 && e.keyCode <= 123) return;
-		// allow char keys
-		if (e.key == null || e.key.length == 1) return;
-		e.preventDefault();
 	}
 
 	private static function keyUp(event: KeyboardEvent): Void {
@@ -1005,8 +1004,7 @@ class SystemImpl {
 
 		if (ie) pressedKeys[event.keyCode] = false;
 
-		var keyCode = fixedKeyCode(event);
-		keyboard.sendUpEvent(keyCode);
+		keyboard.sendUpEvent(cast event.keyCode);
 
 		insideInputEvent = false;
 	}
@@ -1089,21 +1087,5 @@ class SystemImpl {
 
 	public static function safeZone(): Float {
 		return 1.0;
-	}
-
-	public static function login(): Void {
-
-	}
-
-	public static function automaticSafeZone(): Bool {
-		return true;
-	}
-
-	public static function setSafeZone(value: Float): Void {
-
-	}
-
-	public static function unlockAchievement(id: Int): Void {
-
 	}
 }

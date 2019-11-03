@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C)2005-2019 Haxe Foundation
  *
@@ -23,7 +24,7 @@
 package lua;
 
 /**
-	The sole purpose of this extern is to provide a concrete type for
-	basic reflection purposes.
+  The sole purpose of this extern is to provide a concrete type for 
+  basic reflection purposes.
 **/
 class Thread {}

@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
-package cpp;
+ package cpp;
 
 @:coreType @:notNull @:runtimeValue abstract Int8 from Int to Int {}

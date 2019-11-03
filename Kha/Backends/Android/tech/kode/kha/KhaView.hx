@@ -31,35 +31,31 @@ class OnTouchRunner implements Runnable {
 }
 
 class OnKeyDownRunner implements Runnable {
-    private var renderer: KhaRenderer;
-    private var keyCode: Int;
-    private var char: String;
+	private var renderer: KhaRenderer;
+	private var keyCode: Int;
 
-    public function new(renderer: KhaRenderer, keyCode: Int, char: String) {
-        this.renderer = renderer;
-        this.keyCode = keyCode;
-        this.char = char;
-    }
+	public function new(renderer: KhaRenderer, keyCode: Int) {
+		this.renderer = renderer;
+		this.keyCode = keyCode;
+	}
 
-    public function run(): Void {
-        renderer.key(keyCode, true, char);
-    }
+	public function run(): Void {
+		renderer.key(keyCode, true);
+	}
 }
 
 class OnKeyUpRunner implements Runnable {
-    private var renderer: KhaRenderer;
-    private var keyCode: Int;
-    private var char: String;
+	private var renderer: KhaRenderer;
+	private var keyCode: Int;
 
-    public function new(renderer: KhaRenderer, keyCode: Int, char: String) {
-        this.renderer = renderer;
-        this.keyCode = keyCode;
-        this.char = char;
-    }
+	public function new(renderer: KhaRenderer, keyCode: Int) {
+		this.renderer = renderer;
+		this.keyCode = keyCode;
+	}
 
-    public function run(): Void {
-        renderer.key(keyCode, false, char);
-    }
+	public function run(): Void {
+		renderer.key(keyCode, false);
+	}
 }
 
 @:keep
@@ -141,7 +137,7 @@ class KhaView extends GLSurfaceView implements ViewOnTouchListener {
 			return true;
 		}*/
 		
-		this.queueEvent(new OnKeyDownRunner(renderer, keyCode, String.fromCharCode(event.getUnicodeChar())));
+		this.queueEvent(new OnKeyDownRunner(renderer, keyCode));
 		return true;
 	}
 
@@ -151,7 +147,7 @@ class KhaView extends GLSurfaceView implements ViewOnTouchListener {
 			|| event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP) {
 			return false;
 		}
-		this.queueEvent(new OnKeyUpRunner(renderer, keyCode, '')); //doesn't make sense to send text
+		this.queueEvent(new OnKeyUpRunner(renderer, keyCode));
 	    return true;
 	}
 

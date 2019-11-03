@@ -116,15 +116,15 @@ class LoaderImpl {
 
 	}
 
-	@:keep static function blobLoaded(index: cpp.UInt64, bytes: BytesData) {
+	static function blobLoaded(index: cpp.UInt64, bytes: BytesData) {
 		blobCallbacks[index].success(new Blob(Bytes.ofData(bytes)));
 	}
 
-	@:keep static function blobErrored(index: cpp.UInt64, filename: String) {
+	static function blobErrored(index: cpp.UInt64, filename: String) {
 		blobCallbacks[index].error({url: filename});
 	}
 
-	@:keep static function soundLoadedCompressed(index: cpp.UInt64, bytes: BytesData) {
+	static function soundLoadedCompressed(index: cpp.UInt64, bytes: BytesData) {
 		var sound = new Sound();
 		sound.compressedData = Bytes.ofData(bytes);
 		sound.uncompressedData = null;
@@ -134,7 +134,7 @@ class LoaderImpl {
 		soundCallbacks[index].success(sound);
 	}
 
-	@:keep static function soundLoadedUncompressed(index: cpp.UInt64, samples: Float32Array, channels: Int, sampleRate: Int, length: Float) {
+	static function soundLoadedUncompressed(index: cpp.UInt64, samples: Float32Array, channels: Int, sampleRate: Int, length: Float) {
 		var sound = new Sound();
 		sound.compressedData = null;
 		sound.uncompressedData = samples;
@@ -144,23 +144,23 @@ class LoaderImpl {
 		soundCallbacks[index].success(sound);
 	}
 
-	@:keep static function soundErrored(index: cpp.UInt64, filename: String) {
+	static function soundErrored(index: cpp.UInt64, filename: String) {
 		soundCallbacks[index].error({url: filename});
 	}
 
-	@:keep static function createFloat32Array() {
+	static function createFloat32Array() {
 		return new Float32Array();
 	}
 
-	@:keep static function createEmptyImage(readable: Bool, floatFormat: Bool) {
+	static function createEmptyImage(readable: Bool, floatFormat: Bool) {
 		return Image.createEmpty(readable, floatFormat);
 	}
 
-	@:keep static function imageLoaded(index: cpp.UInt64, image: Image) {
+	static function imageLoaded(index: cpp.UInt64, image: Image) {
 		imageCallbacks[index].success(image);
 	}
 
-	@:keep static function imageErrored(index: cpp.UInt64, filename: String) {
+	static function imageErrored(index: cpp.UInt64, filename: String) {
 		imageCallbacks[index].error({url: filename});
 	}
 
@@ -175,7 +175,6 @@ class LoaderImpl {
 					else {
 						Array<unsigned char> buffer = Array_obj<unsigned char>::fromData(file.data.blob.bytes, file.data.blob.size);
 						blobLoaded(file.index, buffer);
-						kha_loader_cleanup_blob(file.data.blob);
 					}
 					break;
 				case KHA_FILE_TYPE_IMAGE:
@@ -201,11 +200,10 @@ class LoaderImpl {
 					else {
 						Array<unsigned char> buffer = Array_obj<unsigned char>::fromData(file.data.sound.compressed_samples, file.data.sound.size);
 						soundLoadedCompressed(file.index, buffer);
-						kha_loader_cleanup_sound(file.data.sound);
 					}
 					break;
 			}
-
+			
 			file = kha_loader_get_file();
 		}
 	')

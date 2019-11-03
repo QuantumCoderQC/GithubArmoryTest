@@ -20,6 +20,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+// This file is generated from typedarray.webidl. Do not edit!
+
 package js.lib;
 
 /**
@@ -30,7 +32,8 @@ package js.lib;
 	@see <https://developer.mozilla.org/en-US/docs/Web/API/ArrayBufferView>
 **/
 extern interface ArrayBufferView {
-	final buffer:ArrayBuffer;
-	final byteOffset:Int;
-	final byteLength:Int;
+	var buffer(default,null) : ArrayBuffer;
+	var byteOffset(default,null) : Int;
+	var byteLength(default,null) : Int;
+	
 }

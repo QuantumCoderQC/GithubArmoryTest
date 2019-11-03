@@ -57,12 +57,13 @@ class Linker
       return false;
    }
 
-   public function link(inTarget:Target,inObjs:Array<String>,inCompiler:Compiler,extraDeps:Array<String> )
+   public function link(inTarget:Target,inObjs:Array<String>,inCompiler:Compiler,?overrideTmpDir:String)
    {
       var ext = inTarget.getExt(mExt);
       var file_name = mNamePrefix + inTarget.mOutput + ext;
 
-      var tmpDir = inCompiler.mObjDir;
+      var tmpDir = overrideTmpDir==null ? inCompiler.mObjDir : overrideTmpDir;
+
 
       try
       {
@@ -163,7 +164,7 @@ class Linker
 
       }
 
-      if (isOutOfDateLibs || isOutOfDate(out_name,inObjs) || isOutOfDate(out_name,inTarget.mDepends) || isOutOfDate(out_name,extraDeps) )
+      if (isOutOfDateLibs || isOutOfDate(out_name,inObjs) || isOutOfDate(out_name,inTarget.mDepends))
       {
          var args = new Array<String>();
          var out = mOutFlag;

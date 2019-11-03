@@ -14,7 +14,7 @@ class VertexBuffer {
 		return null;
 	}
 	
-	public function unlock(?count: Int): Void {
+	public function unlock(): Void {
 		
 	}
 	

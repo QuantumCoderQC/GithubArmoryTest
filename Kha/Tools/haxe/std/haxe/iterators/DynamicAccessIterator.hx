@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package haxe.iterators;
 
 /**
@@ -39,14 +38,14 @@ class DynamicAccessIterator<T> {
 	/**
 		See `Iterator.hasNext`
 	**/
-	public inline function hasNext():Bool {
+ 	public inline function hasNext():Bool {
 		return index < keys.length;
 	}
 
 	/**
 		See `Iterator.next`
 	**/
-	public inline function next():T {
+ 	public inline function next():T {
 		return access[keys[index++]];
 	}
 }

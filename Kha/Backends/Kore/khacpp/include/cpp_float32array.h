@@ -4,10 +4,6 @@ struct float32array {
 	float* data;
 	int myLength;
 
-	float32array() {
-		data = NULL;
-	}
-
 	void alloc(int elements) {
 		myLength = elements;
 		data = new float[myLength];

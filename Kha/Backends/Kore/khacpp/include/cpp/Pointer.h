@@ -257,9 +257,7 @@ public:
  	inline Pointer inc() { return ++ptr; }
 	inline Pointer dec() { return --ptr; }
 	inline Pointer add(int inInt) { return ptr+inInt; }
-	inline Pointer sub(int inInt) { return ptr-inInt; }
  	inline Pointer incBy(int inDiff) { ptr+=inDiff; return ptr; }
- 	inline Pointer decBy(int inDiff) { ptr-=inDiff; return ptr; }
  	inline T &postIncRef() { return *ptr++; }
  	inline T &postIncVal() { return *ptr++; }
 
@@ -332,9 +330,7 @@ public:
  	inline Pointer inc() { return ptr; }
 	inline Pointer dec() { return ptr; }
 	inline Pointer add(int inInt) { return ptr; }
-	inline Pointer sub(int inInt) { return ptr; }
  	inline Pointer incBy(int inDiff) { return ptr; }
- 	inline Pointer decBy(int inDiff) { return ptr; }
  	inline void postIncRef() {  }
  	inline void postIncVal() {  }
 

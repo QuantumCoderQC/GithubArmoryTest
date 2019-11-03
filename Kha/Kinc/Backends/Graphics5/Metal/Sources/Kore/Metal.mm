@@ -16,13 +16,6 @@ using namespace Kore;
 id getMetalDevice();
 id getMetalEncoder();
 
-extern "C" {
-	int renderTargetWidth;
-	int renderTargetHeight;
-	int newRenderTargetWidth;
-	int newRenderTargetHeight;
-}
-
 namespace {
 	// bool fullscreen;
 	// TextureFilter minFilters[32];

@@ -19,11 +19,10 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package sys.io;
 
 private extern class NativeProcess {
-	function new(cmd:String, ?args:Array<String>):Void;
+	function new (cmd:String, ?args:Array<String>):Void;
 
 	function close():Void;
 	function exitCode():Int;
@@ -52,14 +51,14 @@ private class Stdin extends haxe.io.Output {
 	}
 
 	public override function writeByte(c:Int) {
-		buf.set(0, c);
-		writeBytes(buf, 0, 1);
+		buf.set(0,c);
+		writeBytes(buf,0,1);
 	}
 
 	public override function writeBytes(buf:haxe.io.Bytes, pos:Int, len:Int) {
 		try {
 			return proc.writeStdin(buf, pos, len);
-		} catch (e:Dynamic) {
+		} catch( e:Dynamic ) {
 			throw new haxe.io.Eof();
 		}
 	}
@@ -77,7 +76,7 @@ private class Stdout extends haxe.io.Input {
 	}
 
 	public override function readByte() {
-		if (readBytes(buf, 0, 1) == 0)
+		if(readBytes(buf,0,1) == 0)
 			throw haxe.io.Error.Blocked;
 		return buf.get(0);
 	}
@@ -89,7 +88,7 @@ private class Stdout extends haxe.io.Input {
 			} else {
 				return proc.readStderr(bytes, pos, len);
 			}
-		} catch (e:Dynamic) {
+		} catch( e:Dynamic ) {
 			throw new haxe.io.Eof();
 		}
 	}
@@ -118,8 +117,7 @@ class Process {
 	}
 
 	public function exitCode(block:Bool = true):Null<Int> {
-		if (block == false)
-			throw "Non blocking exitCode() not supported on this platform";
+		if( block == false ) throw "Non blocking exitCode() not supported on this platform";
 		return proc.exitCode();
 	}
 

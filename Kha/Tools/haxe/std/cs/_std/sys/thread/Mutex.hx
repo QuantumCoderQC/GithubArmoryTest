@@ -27,7 +27,9 @@ import cs.system.threading.Mutex as NativeMutex;
 class Mutex {
 	final native = new NativeMutex();
 
-	public function new():Void {}
+	public function new():Void {
+
+	}
 
 	public function acquire():Void {
 		native.WaitOne();

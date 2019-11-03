@@ -21,7 +21,6 @@
  */
 
 package haxe.rtti;
-
 import haxe.rtti.CType;
 
 /**
@@ -30,6 +29,7 @@ import haxe.rtti.CType;
 	@see <https://haxe.org/manual/cr-rtti.html>
 **/
 class Rtti {
+
 	/**
 		Returns the `haxe.rtti.CType.Classdef` corresponding to class `c`.
 
@@ -46,10 +46,8 @@ class Rtti {
 		var x = Xml.parse(rtti).firstElement();
 		var infos = new haxe.rtti.XmlParser().processElement(x);
 		switch (infos) {
-			case TClassdecl(c):
-				return c;
-			case var t:
-				throw 'Enum mismatch: expected TClassDecl but found $t';
+			case TClassdecl(c): return c;
+			case var t: throw 'Enum mismatch: expected TClassDecl but found $t';
 		}
 	}
 

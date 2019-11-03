@@ -52,9 +52,8 @@ class AssetsBuilder {
 		var names = new Array<Expr>();
 
 		for (file in files) {
-			final name = file.name;
-			final filename = file.files[0];
-			final pos = Context.currentPos();
+			var name = file.name;
+			var filename = file.files[0];
 
 			if (file.type == type) {
 
@@ -64,87 +63,95 @@ class AssetsBuilder {
 					case "image":
 						fields.push({
 							name: name,
-							meta: [{pos: pos, name: ":keep"}],
+							doc: null,
+							meta: [],
 							access: [APublic],
 							kind: FVar(macro: kha.Image, macro null),
-							pos: pos
+							pos: Context.currentPos()
 						});
 					case "sound":
 						fields.push({
 							name: name,
-							meta: [{pos: pos, name: ":keep"}],
+							doc: null,
+							meta: [],
 							access: [APublic],
 							kind: FVar(macro: kha.Sound, macro null),
-							pos: pos
+							pos: Context.currentPos()
 						});
 					case "blob":
 						fields.push({
 							name: name,
-							meta: [{pos: pos, name: ":keep"}],
+							doc: null,
+							meta: [],
 							access: [APublic],
 							kind: FVar(macro: kha.Blob, macro null),
-							pos: pos
+							pos: Context.currentPos()
 						});
 					case "font":
 						fields.push({
 							name: name,
-							meta: [{pos: pos, name: ":keep"}],
+							doc: null,
+							meta: [],
 							access: [APublic],
 							kind: FVar(macro: kha.Font, macro null),
-							pos: pos
+							pos: Context.currentPos()
 						});
 					case "video":
 						fields.push({
 							name: name,
-							meta: [{pos: pos, name: ":keep"}],
+							doc: null,
+							meta: [],
 							access: [APublic],
 							kind: FVar(macro: kha.Video, macro null),
-							pos: pos
+							pos: Context.currentPos()
 						});
 				}
 
 				fields.push({
 					name: name + "Name",
+					doc: null,
 					meta: [],
 					access: [APublic],
 					kind: FVar(macro: String, macro $v { name }),
-					pos: pos
+					pos: Context.currentPos()
 				});
 
 				fields.push({
 					name: name + "Description",
-					meta: [{pos: pos, name: ":keep"}],
+					doc: null,
+					meta: [],
 					access: [APublic],
 					kind: FVar(macro: Dynamic, macro $v { file }),
-					pos: pos
+					pos: Context.currentPos()
 				});
 
 				var loadExpressions = macro { };
 				switch (type) {
 					case "image":
 						loadExpressions = macro {
-							Assets.loadImage($v{name}, function (image: Image) done(), failure);
+							Assets.loadImage($v{name}, function (image: Image) done(), kha.Assets.reporter(failure));
 						};
 					case "sound":
 						loadExpressions = macro {
-							Assets.loadSound($v{name}, function (sound: Sound) done(), failure);
+							Assets.loadSound($v{name}, function (sound: Sound) done(), kha.Assets.reporter(failure));
 						};
 					case "blob":
 						loadExpressions = macro {
-							Assets.loadBlob($v{name}, function (blob: Blob) done(), failure);
+							Assets.loadBlob($v{name}, function (blob: Blob) done(), kha.Assets.reporter(failure));
 						};
 					case "font":
 						loadExpressions = macro {
-							Assets.loadFont($v{name}, function (font: Font) done(), failure);
+							Assets.loadFont($v{name}, function (font: Font) done(), kha.Assets.reporter(failure));
 						};
 					case "video":
 						loadExpressions = macro {
-							Assets.loadVideo($v{name}, function (video: Video) done(), failure);
+							Assets.loadVideo($v{name}, function (video: Video) done(), kha.Assets.reporter(failure));
 						};
 				}
 
 				fields.push({
 					name: name + "Load",
+					doc: null,
 					meta: [],
 					access: [APublic],
 					kind: FFun({
@@ -159,15 +166,16 @@ class AssetsBuilder {
 						}, {
 							value: null,
 							type: Context.toComplexType(Context.getType("kha.internal.AssetErrorCallback")),
-							opt: true,
+							opt: null,
 							name: "failure"
 						}]
 					}),
-					pos: pos
+					pos: Context.currentPos()
 				});
 
 				fields.push({
 					name: name + "Unload",
+					doc: null,
 					meta: [],
 					access: [APublic],
 					kind: FFun({
@@ -179,13 +187,14 @@ class AssetsBuilder {
 						},
 						args: []
 					}),
-					pos: pos
+					pos: Context.currentPos()
 				});
 			}
 		}
 
 		fields.push({
 			name: "names",
+			doc: null,
 			meta: [],
 			access: [APublic],
 			kind: FVar(macro: Array<String>, macro $a { names }),

@@ -69,7 +69,7 @@ inline int HxAtomicDec(volatile int *ioWhere)
 
 #elif defined(ANDROID)
 
-#if (HXCPP_ANDROID_PLATFORM>=16)
+#if (HXCPP_ANDROID_PLATFORM>=21)
 // Nice one, google, no one was using that.
 #define __ATOMIC_INLINE__ static __inline__ __attribute__((always_inline))
 // returns 0=exchange took place, 1=not
@@ -324,66 +324,34 @@ typedef TAutoLock<HxMutex> AutoLock;
 
 struct HxSemaphore {
 	HxSemaphore() {
-		kinc_event_init(&event, true);
+		event.create();
 	}
 
 	~HxSemaphore() {
-		kinc_event_destroy(&event);
+		event.destroy();
 	}
 
 	void Set() {
-		kinc_event_signal(&event);
+		event.signal();
 	}
 
 	void Wait() {
-		kinc_event_wait(&event);
+		event.wait();
 	}
 
 	bool WaitSeconds(double inSeconds) {
-		return kinc_event_try_to_wait(&event, inSeconds);
+		return event.tryToWait(inSeconds);
 	}
 
 	void Reset() {
-		kinc_event_reset(&event);
+		event.reset();
 	}
 
 	void Clean() {
-		kinc_event_destroy(&event);
+		event.destroy();
 	}
 private:
-	kinc_event_t event;
-};
-
-struct ThreadPoolSignal {
-	ThreadPoolSignal() {
-		kinc_event_init(&event, true);
-	}
-
-	~ThreadPoolSignal() {
-
-	}
-
-	void Set() {
-		kinc_event_signal(&event);
-	}
-
-	void Wait() {
-		kinc_event_wait(&event);
-	}
-
-	bool WaitSeconds(double inSeconds) {
-		return kinc_event_try_to_wait(&event, inSeconds);
-	}
-
-	void Reset() {
-		kinc_event_reset(&event);
-	}
-
-	void Clean() {
-		kinc_event_destroy(&event);
-	}
-private:
-	kinc_event_t event;
+	Kore::Event event;
 };
 
 #elif defined(HX_WINDOWS)

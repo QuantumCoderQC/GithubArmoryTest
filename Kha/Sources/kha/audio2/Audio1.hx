@@ -1,8 +1,9 @@
 package kha.audio2;
 
+#if cpp
+import sys.thread.Mutex;
+#end
 import haxe.ds.Vector;
-
-@:cppFileCode("#include <kinc/pch.h>\n#include <kinc/threads/mutex.h>\nstatic kinc_mutex_t mutex;")
 
 class Audio1 {
 	private static inline var channelCount: Int = 32;
@@ -13,12 +14,14 @@ class Audio1 {
 	private static var internalStreamChannels: Vector<StreamChannel>;
 	private static var sampleCache1: kha.arrays.Float32Array;
 	private static var sampleCache2: kha.arrays.Float32Array;
-	private static var lastAllocationCount: Int = 0;
+	#if cpp
+	private static var mutex: Mutex;
+	#end
 
 	@:noCompletion
 	public static function _init(): Void {
 		#if cpp
-		untyped __cpp__('kinc_mutex_init(&mutex)');
+		mutex = new Mutex();
 		#end
 		soundChannels = new Vector<AudioChannel>(channelCount);
 		streamChannels = new Vector<StreamChannel>(channelCount);
@@ -26,10 +29,9 @@ class Audio1 {
 		internalStreamChannels = new Vector<StreamChannel>(channelCount);
 		sampleCache1 = new kha.arrays.Float32Array(512);
 		sampleCache2 = new kha.arrays.Float32Array(512);
-		lastAllocationCount = 0;
 		Audio.audioCallback = mix;
 	}
-	
+
 	private static inline function max(a: Float, b: Float): Float {
 		return a > b ? a : b;
 	}
@@ -38,41 +40,17 @@ class Audio1 {
 		return a < b ? a : b;
 	}
 
-	public static function mix(samplesBox: kha.internal.IntBox, buffer: Buffer): Void {
-		var samples = samplesBox.value;
+	public static function mix(samples: Int, buffer: Buffer): Void {
 		if (sampleCache1.length < samples) {
-			if (Audio.disableGcInteractions) {
-				trace("Unexpected allocation request in audio thread.");
-				for (i in 0...samples) {
-					buffer.data.set(buffer.writeLocation, 0);
-					buffer.writeLocation += 1;
-					if (buffer.writeLocation >= buffer.size) {
-						buffer.writeLocation = 0;
-					}
-				}
-				lastAllocationCount = 0;
-				Audio.disableGcInteractions = false;
-				return;
-			}
-			sampleCache1 = new kha.arrays.Float32Array(samples * 2);
-			sampleCache2 = new kha.arrays.Float32Array(samples * 2);
-			lastAllocationCount = 0;
+			sampleCache1 = new kha.arrays.Float32Array(samples);
+			sampleCache2 = new kha.arrays.Float32Array(samples);
 		}
-		else {
-			if (lastAllocationCount > 100) {
-				Audio.disableGcInteractions = true;
-			}
-			else {
-				lastAllocationCount += 1;
-			}
-		}
-
 		for (i in 0...samples) {
 			sampleCache2[i] = 0;
 		}
 
 		#if cpp
-		untyped __cpp__('kinc_mutex_lock(&mutex)');
+		mutex.acquire();
 		#end
 		for (i in 0...channelCount) {
 			internalSoundChannels[i] = soundChannels[i];
@@ -81,7 +59,7 @@ class Audio1 {
 			internalStreamChannels[i] = streamChannels[i];
 		}
 		#if cpp
-		untyped __cpp__('kinc_mutex_unlock(&mutex)');
+		mutex.release();
 		#end
 
 		for (channel in internalSoundChannels) {
@@ -120,7 +98,7 @@ class Audio1 {
 		var foundChannel = false;
 
 		#if cpp
-		untyped __cpp__('kinc_mutex_lock(&mutex)');
+		mutex.acquire();
 		#end
 		for (i in 0...channelCount) {
 			if (soundChannels[i] == null || soundChannels[i].finished) {
@@ -130,7 +108,7 @@ class Audio1 {
 			}
 		}
 		#if cpp
-		untyped __cpp__('kinc_mutex_unlock(&mutex)');
+		mutex.release();
 		#end
 
 		return foundChannel ? channel : null;
@@ -138,7 +116,7 @@ class Audio1 {
 
 	public static function _playAgain(channel: kha.audio2.AudioChannel): Void {
 		#if cpp
-		untyped __cpp__('kinc_mutex_lock(&mutex)');
+		mutex.acquire();
 		#end
 		for (i in 0...channelCount) {
 			if (soundChannels[i] == channel) {
@@ -152,7 +130,7 @@ class Audio1 {
 			}
 		}
 		#if cpp
-		untyped __cpp__('kinc_mutex_unlock(&mutex)');
+		mutex.release();
 		#end
 	}
 
@@ -167,7 +145,7 @@ class Audio1 {
 		var foundChannel = false;
 
 		#if cpp
-		untyped __cpp__('kinc_mutex_lock(&mutex)');
+		mutex.acquire();
 		#end
 		for (i in 0...channelCount) {
 			if (streamChannels[i] == null || streamChannels[i].finished) {
@@ -177,7 +155,7 @@ class Audio1 {
 			}
 		}
 		#if cpp
-		untyped __cpp__('kinc_mutex_unlock(&mutex)');
+		mutex.release();
 		#end
 
 		return foundChannel ? channel : null;

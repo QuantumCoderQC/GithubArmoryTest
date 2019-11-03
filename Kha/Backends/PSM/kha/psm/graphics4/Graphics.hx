@@ -213,7 +213,11 @@ class Graphics implements kha.graphics4.Graphics {
 	public function setFloat4s(location: kha.graphics4.ConstantLocation, values: Array<Float>): Void {
 		
 	}
-
+		
+	public function renderTargetsInvertedY(): Bool {
+		return false;
+	}
+	
 	public function begin(): Void {
 		
 	}

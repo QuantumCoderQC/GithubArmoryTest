@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package haxe.iterators;
 
 /**
@@ -50,6 +49,6 @@ class StringKeyValueIterator {
 		See `KeyValueIterator.next`
 	**/
 	public inline function next() {
-		return {key: offset, value: StringTools.fastCodeAt(s, offset++)};
+		return { key : offset, value : StringTools.fastCodeAt(s, offset++) };
 	}
 }

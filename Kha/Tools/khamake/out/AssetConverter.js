@@ -46,9 +46,6 @@ class AssetConverter {
         if (options.destination) {
             destination = AssetConverter.replacePattern(options.destination, destination, fileinfo, options, from);
         }
-        if (options.destinationCallback) {
-            destination = options.destinationCallback(destination);
-        }
         if (keepextension && (!options.name || options.name.indexOf('{ext}') < 0)) {
             nameValue += fileinfo.ext;
         }
@@ -61,7 +58,7 @@ class AssetConverter {
         return new Promise((resolve, reject) => {
             let ready = false;
             let files = [];
-            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.(git|DS_Store)/, persistent: watch, followSymlinks: false });
+            this.watcher = chokidar.watch(match, { ignored: /[\/\\]\.(git|DS_Store)/, persistent: watch });
             const onFileChange = (file) => {
                 const fileinfo = path.parse(file);
                 const baseDir = path.dirname(match);

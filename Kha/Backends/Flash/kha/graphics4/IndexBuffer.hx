@@ -17,11 +17,11 @@ class IndexBuffer {
 		lockedIndices[indexCount - 1] = 0;
 	}
 
-	public function lock(?start: Int, ?count: Int): Uint32Array {
+	public function lock(): Uint32Array {
 		return lockedIndices;
 	}
 
-	public function unlock(?count: Int): Void {
+	public function unlock(): Void {
 		for (i in 0...indices.length) {
 			indices[i] = lockedIndices[i];
 		}

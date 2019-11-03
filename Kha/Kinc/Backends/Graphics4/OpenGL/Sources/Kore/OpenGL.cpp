@@ -184,10 +184,9 @@ void kinc_g4_init(int windowId, int depthBufferBits, int stencilBufferBits, bool
 		}
 	}
 #endif
-
 #ifdef KORE_OPENGL_ES
     char *exts = (char *)glGetString(GL_EXTENSIONS);
-    Kinc_Internal_SupportsDepthTexture = exts != NULL && strstr(exts, "GL_OES_depth_texture") != NULL;
+    Kinc_Internal_SupportsDepthTexture = strstr(exts, "GL_OES_depth_texture") != NULL;
 #endif
 
 	lastPipeline = nullptr;

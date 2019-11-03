@@ -232,13 +232,6 @@ String __int_hash_to_string(Dynamic &ioHash)
 
 }
 
-void __int_hash_clear(Dynamic &ioHash)
-{
-   IntHashBase *hash = static_cast<IntHashBase *>(ioHash.GetPtr());
-   if (hash)
-      hash->clear();
-}
-
 
 
 // --- StringHash ----------------------------------------------------
@@ -487,12 +480,6 @@ String __string_hash_to_string_raw(Dynamic &ioHash)
    return null();
 }
 
-void __string_hash_clear(Dynamic &ioHash)
-{
-   StringHashBase *hash = static_cast<StringHashBase *>(ioHash.GetPtr());
-   if (hash)
-      hash->clear();
-}
 
 
 
@@ -761,12 +748,5 @@ String __object_hash_to_string(Dynamic &ioHash)
       return hash->toString();
    return HX_CSTRING("{}");
 
-}
-
-void __object_hash_clear(Dynamic &ioHash)
-{
-   DynamicHashBase *hash = static_cast<DynamicHashBase *>(ioHash.GetPtr());
-   if (hash)
-      hash->clear();
 }
 

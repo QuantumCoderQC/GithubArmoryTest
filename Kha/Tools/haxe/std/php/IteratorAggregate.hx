@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package php;
 
 @:native('IteratorAggregate')
@@ -29,6 +28,5 @@ extern interface IteratorAggregate<T> {
 		Use iterator() instead.
 		The return type would be Aggregator that is unusable in Haxe
 	**/
-	private function getIterator():Iterator<T>; //
-
+	private function getIterator() : Iterator<T>; //
 }

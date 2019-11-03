@@ -209,7 +209,7 @@ class SystemImpl {
 	}
 
 	public static function getLanguage(): String {
-		return Capabilities.language.substr(0, 2);
+		return Capabilities.language;
 	}
 
 	public static function requestShutdown(): Bool {
@@ -238,21 +238,5 @@ class SystemImpl {
 
 	public static function safeZone(): Float {
 		return 1.0;
-	}
-
-	public static function login(): Void {
-
-	}
-
-	public static function automaticSafeZone(): Bool {
-		return true;
-	}
-
-	public static function setSafeZone(value: Float): Void {
-
-	}
-
-	public static function unlockAchievement(id: Int): Void {
-
 	}
 }

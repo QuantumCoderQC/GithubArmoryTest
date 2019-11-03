@@ -38,7 +38,7 @@ function fixName(name) {
     return name;
 }
 function safeName(name) {
-    return name.replace(/[^A-z0-9\-\_]/g, '-');
+    return name.replace(/[\\\/]/g, '_');
 }
 function createKorefile(name, exporter, options, targetOptions, libraries, cdefines, stackSize, version, id, korehl, icon) {
     let out = '';
@@ -56,11 +56,13 @@ function createKorefile(name, exporter, options, targetOptions, libraries, cdefi
     for (let cdefine of cdefines) {
         out += 'project.addDefine(\'' + cdefine + '\');\n';
     }
-    out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
-    out += 'project.addDefine(\'HXCPP_DEBUG\', \'Debug\');\n';
-    if (!options.slowgc) {
-        out += 'project.addDefine(\'HXCPP_GC_GENERATIONAL\');\n';
+    if (options.haxe3) {
+        out += 'project.addDefine(\'HXCPP_API_LEVEL=331\');\n';
     }
+    else {
+        out += 'project.addDefine(\'HXCPP_API_LEVEL=400\');\n';
+    }
+    out += 'project.addDefine(\'HXCPP_DEBUG\', \'Debug\');\n';
     if (targetOptions) {
         let koreTargetOptions = {};
         for (let option in targetOptions) {
@@ -101,8 +103,8 @@ async function exportProjectFiles(name, resourceDir, options, exporter, kore, ko
         let haxeOptions = exporter.haxeOptions(name, targetOptions, defines);
         haxeOptions.defines.push('kha');
         haxeOptions.defines.push('kha_version=1810');
-        haxeOptions.safeName = safeName(haxeOptions.name);
         haxeOptions.defines.push('kha_project_name=' + haxeOptions.name);
+        haxeOptions.safeName = safeName(haxeOptions.name);
         if (options.debug && haxeOptions.parameters.indexOf('-debug') < 0) {
             haxeOptions.parameters.push('-debug');
         }
@@ -545,44 +547,6 @@ function runProject(options) {
     });
 }
 exports.api = 2;
-function findKhaVersion(dir) {
-    if (fs.existsSync(path.join(dir, '.git'))) {
-        let gitVersion = 'git-error';
-        try {
-            const output = child_process.spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', cwd: dir }).output;
-            for (const str of output) {
-                if (str != null && str.length > 0) {
-                    gitVersion = str.substr(0, 8);
-                    break;
-                }
-            }
-        }
-        catch (error) {
-        }
-        let gitStatus = 'git-error';
-        try {
-            const output = child_process.spawnSync('git', ['status', '--porcelain'], { encoding: 'utf8', cwd: dir }).output;
-            gitStatus = '';
-            for (const str of output) {
-                if (str != null && str.length > 0) {
-                    gitStatus = str.trim();
-                    break;
-                }
-            }
-        }
-        catch (error) {
-        }
-        if (gitStatus) {
-            return gitVersion + ', ' + gitStatus;
-        }
-        else {
-            return gitVersion;
-        }
-    }
-    else {
-        return 'unversioned';
-    }
-}
 async function run(options, loglog) {
     if (options.silent) {
         log.silent();
@@ -599,12 +563,17 @@ async function run(options, loglog) {
     else {
         options.kha = path.resolve(options.kha);
     }
-    log.info('Using Kha (' + findKhaVersion(options.kha) + ') from ' + options.kha);
+    log.info('Using Kha from ' + options.kha);
     if (options.parallelAssetConversion === undefined) {
         options.parallelAssetConversion = 0;
     }
+    if (options.haxe3 === undefined) {
+        options.haxe3 = false;
+    }
     if (!options.haxe) {
-        let haxepath = path.join(options.kha, 'Tools', 'haxe');
+        let haxepath = options.haxe3
+            ? path.join(options.kha, 'Tools', 'haxe', 'v3.x')
+            : path.join(options.kha, 'Tools', 'haxe');
         if (fs.existsSync(haxepath) && fs.statSync(haxepath).isDirectory())
             options.haxe = haxepath;
     }

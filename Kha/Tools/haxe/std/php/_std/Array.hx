@@ -19,15 +19,13 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 import php.*;
 
 using php.Global;
 
 @:coreApi
-final class Array<T> implements ArrayAccess<Int, T> {
+final class Array<T> implements ArrayAccess<Int,T> {
 	public var length(default, null):Int;
-
 	var arr:NativeIndexedArray<T>;
 
 	public function new() {
@@ -45,10 +43,12 @@ final class Array<T> implements ArrayAccess<Int, T> {
 
 	public inline function filter(f:T->Bool):Array<T> {
 		var result = Syntax.arrayDecl();
-		for(item in arr) {
-			if (f(item)) {
-				result.push(item);
+		var i = 0;
+		while(i < length) {
+			if(f(arr[i])) {
+				result.push(arr[i]);
 			}
+			i++;
 		}
 		return wrap(result);
 	}
@@ -65,10 +65,8 @@ final class Array<T> implements ArrayAccess<Int, T> {
 		if (fromIndex == null) {
 			fromIndex = 0;
 		} else {
-			if (fromIndex < 0)
-				fromIndex += length;
-			if (fromIndex < 0)
-				fromIndex = 0;
+			if (fromIndex < 0) fromIndex += length;
+			if (fromIndex < 0) fromIndex = 0;
 		}
 		while (fromIndex < length) {
 			if (arr[fromIndex] == x)
@@ -83,8 +81,8 @@ final class Array<T> implements ArrayAccess<Int, T> {
 		Global.array_splice(arr, pos, 0, Syntax.arrayDecl(x));
 	}
 
-	@:ifFeature("dynamic_read.iterator", "anon_optional_read.iterator", "anon_read.iterator")
-	public inline function iterator():Iterator<T> {
+	@:keep
+	public function iterator() : Iterator<T> {
 		return new ArrayIterator(this);
 	}
 
@@ -93,10 +91,8 @@ final class Array<T> implements ArrayAccess<Int, T> {
 	}
 
 	public function lastIndexOf(x:T, ?fromIndex:Int):Int {
-		if (fromIndex == null || fromIndex >= length)
-			fromIndex = length - 1;
-		if (fromIndex < 0)
-			fromIndex += length;
+		if (fromIndex == null || fromIndex >= length) fromIndex = length - 1;
+		if (fromIndex < 0) fromIndex += length;
 		while (fromIndex >= 0) {
 			if (arr[fromIndex] == x)
 				return fromIndex;
@@ -107,15 +103,16 @@ final class Array<T> implements ArrayAccess<Int, T> {
 
 	public inline function map<S>(f:T->S):Array<S> {
 		var result = Syntax.arrayDecl();
-		for(item in arr) {
-			result.push(f(item));
+		var i = 0;
+		while(i < length) {
+			result.push(f(arr[i]));
+			i++;
 		}
 		return wrap(result);
 	}
 
 	public inline function pop():Null<T> {
-		if (length > 0)
-			length--;
+		if (length > 0) length--;
 		return Global.array_pop(arr);
 	}
 
@@ -142,21 +139,17 @@ final class Array<T> implements ArrayAccess<Int, T> {
 	}
 
 	public inline function shift():Null<T> {
-		if (length > 0)
-			length--;
+		if (length > 0) length--;
 		return Global.array_shift(arr);
 	}
 
 	public function slice(pos:Int, ?end:Int):Array<T> {
-		if (pos < 0)
-			pos += length;
-		if (pos < 0)
-			pos = 0;
+		if (pos < 0) pos += length;
+		if (pos < 0) pos = 0;
 		if (end == null) {
 			return wrap(Global.array_slice(arr, pos));
 		} else {
-			if (end < 0)
-				end += length;
+			if (end < 0) end += length;
 			if (end <= pos) {
 				return [];
 			} else {
@@ -170,8 +163,7 @@ final class Array<T> implements ArrayAccess<Int, T> {
 	}
 
 	public function splice(pos:Int, len:Int):Array<T> {
-		if (len < 0)
-			return [];
+		if (len < 0) return [];
 		var result = wrap(Global.array_splice(arr, pos, len));
 		length -= result.length;
 		return result;
@@ -185,7 +177,7 @@ final class Array<T> implements ArrayAccess<Int, T> {
 		return inline Boot.stringifyNativeIndexedArray(arr);
 	}
 
-	public function resize(len:Int):Void {
+	public function resize( len:Int ) : Void {
 		if (length < len) {
 			arr = Global.array_pad(arr, len, null);
 		} else if (length > len) {
@@ -195,34 +187,33 @@ final class Array<T> implements ArrayAccess<Int, T> {
 	}
 
 	@:noCompletion
-	function offsetExists(offset:Int):Bool {
+	function offsetExists( offset:Int ) : Bool {
 		return offset < length;
 	}
 
 	@:noCompletion
-	function offsetGet(offset:Int):Ref<T> {
+	function offsetGet( offset:Int ) : Ref<T> {
 		try {
 			return arr[offset];
-		} catch (e:Dynamic) {
+		} catch(e:Dynamic) {
 			return null;
 		}
 	}
 
 	@:noCompletion
-	function offsetSet(offset:Int, value:T):Void {
+	function offsetSet( offset:Int, value:T ) : Void {
 		if (length <= offset) {
-			for(i in length...offset + 1) {
-				arr[i] = null;
+			if(length < offset) {
+				arr = Global.array_pad(arr, offset + 1, null);
 			}
 			length = offset + 1;
 		}
 		arr[offset] = value;
-		Syntax.code("return {0}", value);
 	}
 
 	@:noCompletion
-	function offsetUnset(offset:Int):Void {
-		if (offset >= 0 && offset < length) {
+	function offsetUnset( offset:Int ) : Void {
+		if (offset >= 0 && offset < length ) {
 			Global.array_splice(arr, offset, 1);
 			--length;
 		}
@@ -256,20 +247,21 @@ private class ArrayIterator<T> {
 	@:keep
 	@:phpMagic
 	function __get(method:String) {
-		return switch (method) {
+		return switch(method) {
 			case 'hasNext', 'next': Boot.closure(this, method);
 			case _: null;
 		}
 	}
 }
 
+
 /**
 	This one is required for `Array`
 **/
 @:native('ArrayAccess')
-private extern interface ArrayAccess<K, V> {
-	private function offsetExists(offset:K):Bool;
-	private function offsetGet(offset:K):V;
-	private function offsetSet(offset:K, value:V):Void;
-	private function offsetUnset(offset:K):Void;
+private extern interface ArrayAccess<K,V> {
+	private function offsetExists( offset:K ) : Bool;
+	private function offsetGet( offset:K ) : V;
+	private function offsetSet( offset:K, value:V ) : Void;
+	private function offsetUnset( offset:K ) : Void;
 }

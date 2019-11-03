@@ -281,7 +281,7 @@ static bool loadImage(kinc_image_read_callbacks_t callbacks, void *user_data, co
 		callbacks.read(user_data, data, 4);   // numFaces
 		callbacks.read(user_data, data, 4);   // mipMapCount
 		callbacks.read(user_data, data, 4);
-
+		
 		callbacks.read(user_data, data, 4);
 		uint32_t meta1fourcc = kinc_read_u32le(data);
 		callbacks.read(user_data, data, 4); // meta1key

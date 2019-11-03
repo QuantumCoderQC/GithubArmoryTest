@@ -19,15 +19,16 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package python.lib;
+
 
 @:pythonImport("shutil")
 extern class Shutil {
-	public static function rmtree(path:String, ?ignore_errors:Bool = false, ?onerror:python.Exceptions.BaseException->Void):Void;
 
-	public static function copyfile(src:String, dst:String):Void;
+	public static function rmtree(path:String, ?ignore_errors:Bool=false, ?onerror:python.Exceptions.BaseException->Void):Void;
 
-	public static function copy(src:String, dst:String):Void;
-	public static function copy2(src:String, dst:String):Void;
+	public static function copyfile (src:String, dst:String):Void;
+
+	public static function copy (src:String, dst:String):Void;
+	public static function copy2 (src:String, dst:String):Void;
 }

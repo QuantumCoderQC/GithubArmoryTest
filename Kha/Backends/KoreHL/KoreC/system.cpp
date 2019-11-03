@@ -26,15 +26,8 @@ extern "C" int hl_kore_get_window_height(int window) {
 }
 
 extern "C" vbyte* hl_kore_get_system_id() {
-	return (vbyte*)Kore::System::systemId();
-}
-
-extern "C" void hl_kore_vibrate(int ms) {
-	Kore::System::vibrate(ms);
-}
-
-extern "C" vbyte* hl_kore_get_language() {
-	return (vbyte*)Kore::System::language();
+	return NULL;
+	// return (vbyte*)Kore::System::systemId();
 }
 
 extern "C" void hl_kore_request_shutdown() {
@@ -178,9 +171,10 @@ typedef char*(*FN_CB_CUT)();
 typedef void(*FN_CB_PASTE)(char*);
 
 extern "C" void hl_kore_register_copycutpaste(vclosure *copy, vclosure *cut, vclosure *paste) {
-	 Kore::System::setCopyCallback(*((FN_CB_COPY*)(&copy->fun)));
-	 Kore::System::setCutCallback(*((FN_CB_CUT*)(&cut->fun)));
-	 Kore::System::setPasteCallback(*((FN_CB_PASTE*)(&paste->fun)));
+	// todo: string convert
+	// Kore::System::setCopyCallback(*((FN_CB_COPY*)(&copy->fun)));
+	// Kore::System::setCutCallback(*((FN_CB_CUT*)(&cut->fun)));
+	// Kore::System::setPasteCallback(*((FN_CB_PASTE*)(&paste->fun)));
 }
 
 extern "C" const char *hl_kore_video_format() {

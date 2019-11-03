@@ -19,10 +19,12 @@
 #if HXCPP_API_LEVEL >= 332
 #include <hxinc/kha/SystemImpl.h>
 #include <hxinc/kha/input/Sensor.h>
+#include <hxinc/kha/ScreenRotation.h>
 #include <hxinc/kha/audio2/Audio.h>
 #else
 #include <kha/SystemImpl.h>
 #include <kha/input/Sensor.h>
+#include <kha/ScreenRotation.h>
 #include <kha/audio2/Audio.h>
 #endif
 
@@ -40,7 +42,7 @@ namespace {
 
 	Kore::Mutex mutex;
 	bool shift = false;
-
+	
 	void keyDown(Kore::KeyCode code) {
 		SystemImpl_obj::keyDown((int)code);
 	}
@@ -136,12 +138,12 @@ namespace {
 	void touchMove(int index, int x, int y) {
 		SystemImpl_obj::touchMove(index, x, y);
 	}
-
+	
 	bool visible = true;
 	bool paused = false;
 
 	void update() {
-		//**if (paused) return;
+		if (paused) return;
 		Kore::Audio2::update();
 
 		SystemImpl_obj::frame();
@@ -153,7 +155,7 @@ namespace {
 				#ifndef VR_RIFT
 				Kore::Graphics4::begin(windowIndex);
                 #endif
-
+			
 				// Google Cardboard: Update the Distortion mesh
 				#ifdef VR_CARDBOARD
 				//	Kore::VrInterface::DistortionBefore();
@@ -164,13 +166,13 @@ namespace {
 				#ifndef VR_RIFT
                 Kore::Graphics4::end(windowIndex);
 				#endif
-
+			
 				// Google Cardboard: Call the DistortionMesh Renderer
 				#ifdef VR_CARDBOARD
 				//	Kore::VrInterface::DistortionAfter();
 				#endif
 
-
+				
 			}
 		}*/
 
@@ -180,12 +182,12 @@ namespace {
 		}
 #endif
 	}
-
+	
 	void foreground() {
 		visible = true;
 		SystemImpl_obj::foreground();
 	}
-
+	
 	void resume() {
 		SystemImpl_obj::resume();
 		paused = false;
@@ -195,12 +197,12 @@ namespace {
 		SystemImpl_obj::pause();
 		paused = true;
 	}
-
+	
 	void background() {
 		visible = false;
 		SystemImpl_obj::background();
 	}
-
+	
 	void shutdown() {
 		SystemImpl_obj::shutdown();
 	}
@@ -208,31 +210,26 @@ namespace {
 	void dropFiles(wchar_t* filePath) {
 		SystemImpl_obj::dropFiles(String(filePath));
 	}
-
+	
 	void orientation(Kore::Orientation orientation) {
 		/*switch (orientation) {
 			case Kore::OrientationLandscapeLeft:
-				::kha::Sys_obj::screenRotation = 270;
+				::kha::Sys_obj::screenRotation = ::kha::ScreenRotation_obj::Rotation270;
 				break;
 			case Kore::OrientationLandscapeRight:
-				::kha::Sys_obj::screenRotation = 90;
+				::kha::Sys_obj::screenRotation = ::kha::ScreenRotation_obj::Rotation90;
 				break;
 			case Kore::OrientationPortrait:
-				::kha::Sys_obj::screenRotation = 0;
+				::kha::Sys_obj::screenRotation = ::kha::ScreenRotation_obj::RotationNone;
 				break;
 			case Kore::OrientationPortraitUpsideDown:
-				::kha::Sys_obj::screenRotation = 180;
+				::kha::Sys_obj::screenRotation = ::kha::ScreenRotation_obj::Rotation180;
 				break;
 			case Kore::OrientationUnknown:
 				break;
 		}*/
 	}
-
-#if defined(HXCPP_TELEMETRY) || defined(HXCPP_PROFILER) || defined(HXCPP_DEBUG)
-	const static bool gcInteractionStrictlyRequired = true;
-#else
-	const static bool gcInteractionStrictlyRequired = false;
-#endif
+	
 	bool mixThreadregistered = false;
 
 	void mix(int samples) {
@@ -240,32 +237,16 @@ namespace {
 
 		int t0 = 99;
 #ifdef KORE_MULTITHREADED_AUDIO
-		if (!mixThreadregistered && !::kha::audio2::Audio_obj::disableGcInteractions) {
+		if (!mixThreadregistered) {
 			hx::SetTopOfStack(&t0, true);
 			mixThreadregistered = true;
-			hx::EnterGCFreeZone();
+			//threadSleep(100);
 		}
-
+#endif
 		//int addr = 0;
 		//Kore::log(Info, "mix address is %x", &addr);
 
-		if (mixThreadregistered && ::kha::audio2::Audio_obj::disableGcInteractions && !gcInteractionStrictlyRequired) {
-			//hx::UnregisterCurrentThread();
-			//mixThreadregistered = false;
-		}
-
-		if (mixThreadregistered) {
-			hx::ExitGCFreeZone();
-		}
-#endif
-
 		::kha::audio2::Audio_obj::_callCallback(samples, Kore::Audio2::samplesPerSecond);
-
-#ifdef KORE_MULTITHREADED_AUDIO
-		if (mixThreadregistered) {
-			hx::EnterGCFreeZone();
-		}
-#endif
 
 		for (int i = 0; i < samples; ++i) {
 			float value = ::kha::audio2::Audio_obj::_readSample();
@@ -290,21 +271,13 @@ namespace {
 	void paste(char* data) {
 		SystemImpl_obj::paste(String(data));
 	}
-
-  void login() {
-    SystemImpl_obj::loginevent();
-  }
-
-  void logout() {
-    SystemImpl_obj::logoutevent();
-  }
 }
 
 void init_kore(const char* name, int width, int height, Kore::WindowOptions* win, Kore::FramebufferOptions* frame) {
 	Kore::log(Kore::Info, "Starting Kore");
-
+	
 	Kore::System::init(name, width, height, win, frame);
-
+	
 	mutex.create();
 
 	Kore::System::setOrientationCallback(orientation);
@@ -318,8 +291,6 @@ void init_kore(const char* name, int width, int height, Kore::WindowOptions* win
 	Kore::System::setCopyCallback(copy);
 	Kore::System::setCutCallback(cut);
 	Kore::System::setPasteCallback(paste);
-	Kore::System::setLoginCallback(login);
-	Kore::System::setLogoutCallback(logout);
 
 	Kore::Keyboard::the()->KeyDown = keyDown;
 	Kore::Keyboard::the()->KeyUp = keyUp;

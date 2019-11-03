@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package haxe.io;
 
 /**
@@ -28,13 +27,10 @@ package haxe.io;
 enum Error {
 	/** The IO is set into nonblocking mode and some data cannot be read or written **/
 	Blocked;
-
 	/** An integer value is outside its allowed range **/
 	Overflow;
-
 	/** An operation on Bytes is outside of its valid range **/
 	OutsideBounds;
-
 	/** Other errors **/
-	Custom(e:Dynamic);
+	Custom( e : Dynamic );
 }

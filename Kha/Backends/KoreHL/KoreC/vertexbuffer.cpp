@@ -28,9 +28,9 @@ extern "C" vbyte *hl_kore_vertexbuffer_lock(vbyte *buffer) {
 	return (vbyte*)buf->lock();
 }
 
-extern "C" void hl_kore_vertexbuffer_unlock(vbyte *buffer, int count) {
+extern "C" void hl_kore_vertexbuffer_unlock(vbyte *buffer) {
 	Kore::Graphics4::VertexBuffer* buf = (Kore::Graphics4::VertexBuffer*)buffer;
-	buf->unlock(count);
+	buf->unlock();
 }
 
 extern "C" int hl_kore_vertexbuffer_count(vbyte *buffer) {

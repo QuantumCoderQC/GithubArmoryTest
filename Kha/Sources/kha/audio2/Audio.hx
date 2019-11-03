@@ -21,10 +21,4 @@ extern class Audio {
 	 * @return On success returns a valid AudioChannel object. Otherwise returns null.
 	 */
 	public static function stream(sound: Sound, loop: Bool = false): kha.audio1.AudioChannel;
-
-	/**
-	 * Used in Kinc based backends to untangle the audio thread from the garbage collector.
-	 * Be very careful please.
-	 */
-	public static var disableGcInteractions: Bool;
 }

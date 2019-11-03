@@ -30,11 +30,11 @@ class IndexBuffer {
 		return buffers[0];
 	}
 	
-	public function lock(?start: Int, ?count: Int): Uint32Array {
+	public function lock(): Uint32Array {
 		return lockedData;
 	}
 	
-	public function unlock(?count: Int): Void {
+	public function unlock(): Void {
 		for (i in 0...mySize) {
 			data.put(i, lockedData.get(i));
 		}

@@ -66,10 +66,6 @@ class Image implements Canvas implements Resource {
 	public static function get_nonPow2Supported(): Bool {
 		return true;
 	}
-	
-	public static function renderTargetsInvertedY(): Bool {
-		return true;
-	}
 
 	public function isOpaque(x: Int, y: Int): Bool { return false; }
 	public function unload(): Void { }

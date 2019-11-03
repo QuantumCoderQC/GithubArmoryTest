@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package haxe.iterators;
 
 /**
@@ -55,7 +54,7 @@ class StringIteratorUnicode {
 	public inline function next() {
 		#if utf16
 		var c = StringTools.utf16CodePointAt(s, offset++);
-		if (c >= StringTools.MIN_SURROGATE_CODE_POINT) {
+		if(c >= StringTools.MIN_SURROGATE_CODE_POINT) {
 			offset++;
 		}
 		return c;

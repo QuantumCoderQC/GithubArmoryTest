@@ -36,8 +36,8 @@ class PipelineCache {
 
 	public function new(pipeline: PipelineState) {
 		this.pipeline = pipeline;
-		try { projectionLocation = pipeline.getConstantLocation("projectionMatrix"); } catch (x: Dynamic) { trace(x); }
-		try { textureLocation = pipeline.getTextureUnit("tex"); } catch (x: Dynamic) { trace(x); }
+		projectionLocation = pipeline.getConstantLocation("projectionMatrix");
+		textureLocation = pipeline.getTextureUnit("tex");
 	}
 }
 
@@ -773,7 +773,7 @@ class Graphics2 extends kha.graphics2.Graphics {
 				width = upperPowerOfTwo(width);
 				height = upperPowerOfTwo(height);
 			}
-			if (Image.renderTargetsInvertedY()) {
+			if (g.renderTargetsInvertedY()) {
 				projectionMatrix.setFrom(FastMatrix4.orthogonalProjection(0, width, 0, height, 0.1, 1000));
 			}
 			else {

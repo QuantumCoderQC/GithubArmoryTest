@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package php;
 
 /**
@@ -38,12 +37,4 @@ abstract NativeStructArray<T:{}>(NativeArray) to NativeArray {
 	inline function __toObject():T {
 		return Boot.createAnon(this);
 	}
-
-	@:arrayAccess
-	inline function get<V>(key:String):V
-		return this[key];
-
-	@:arrayAccess
-	inline function set<V>(key:String, val:V):V
-		return this[key] = val;
 }

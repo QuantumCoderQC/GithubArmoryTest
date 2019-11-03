@@ -236,8 +236,8 @@ let options: Array<any> = [
 		default: 0
 	},
 	{
-		full: 'slowgc',
-		description: 'Disables generational garbage collection.',
+		full: 'haxe3',
+		description: 'Use the battle tested Haxe 3 compiler instead of the cutting edge not really released yet Haxe 4 compiler',
 		value: false
 	}
 ];
@@ -269,12 +269,9 @@ for (let option of options) {
 	}
 }
 
-let targetIsDefault = true;
-
 let args = process.argv;
 for (let i = 2; i < args.length; ++i) {
 	let arg = args[i];
-	if (arg === '--') break;
 
 	if (arg[0] === '-') {
 		if (arg[1] === '-') {
@@ -287,9 +284,6 @@ for (let i = 2; i < args.length; ++i) {
 					if (option.value) {
 						++i;
 						parsedOptions[option.full] = args[i];
-						if (option.full === 'target') {
-							targetIsDefault = false;
-						}
 					}
 					else {
 						parsedOptions[option.full] = true;
@@ -307,9 +301,6 @@ for (let i = 2; i < args.length; ++i) {
 					if (option.value) {
 						++i;
 						parsedOptions[option.full] = args[i];
-						if (option.full === 'target') {
-							targetIsDefault = false;
-						}
 					}
 					else {
 						parsedOptions[option.full] = true;
@@ -319,10 +310,7 @@ for (let i = 2; i < args.length; ++i) {
 		}
 	}
 	else {
-		if (isTarget(arg)) {
-			parsedOptions.target = arg.toLowerCase();
-			targetIsDefault = false;
-		}
+		if (isTarget(arg)) parsedOptions.target = arg.toLowerCase();
 	}
 }
 
@@ -365,7 +353,7 @@ if (parsedOptions.init) {
 else if (parsedOptions.server) {
 	console.log('Running server on ' + parsedOptions.port);
 	let nstatic = require('node-static');
-	let fileServer = new nstatic.Server(path.join(parsedOptions.from, 'build', targetIsDefault ? 'html5' : parsedOptions.target), { cache: 0 });
+	let fileServer = new nstatic.Server(path.join(parsedOptions.from, 'build', 'html5'), { cache: 0 });
 	let server = require('http').createServer(function (request: any, response: any) {
 		request.addListener('end', function () {
 			fileServer.serve(request, response);

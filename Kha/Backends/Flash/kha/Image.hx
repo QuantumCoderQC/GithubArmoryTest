@@ -124,10 +124,6 @@ class Image implements Canvas implements Resource {
 	public static function get_nonPow2Supported(): Bool {
 		return false;
 	}
-	
-	public static function renderTargetsInvertedY(): Bool {
-		return false;
-	}
 
 	public var width(get, null): Int;
 	public var height(get, null): Int;

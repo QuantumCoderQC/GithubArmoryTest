@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 /**
 	An abstract type that represents a Class.
 
@@ -27,4 +26,5 @@
 
 	@see https://haxe.org/manual/types-class-instance.html
 **/
-@:coreType @:runtimeValue abstract Class<T> {}
+@:coreType @:runtimeValue abstract Class<T> {
+}

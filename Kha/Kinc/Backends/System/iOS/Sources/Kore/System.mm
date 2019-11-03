@@ -34,6 +34,10 @@ bool kinc_internal_handle_messages(void) {
 
 void kinc_set_keep_screen_on(bool on) {}
 
+bool kinc_keyboard_available() {
+	return keyboardshown;
+}
+
 void showKeyboard();
 void hideKeyboard();
 
@@ -45,10 +49,6 @@ void kinc_keyboard_show() {
 void kinc_keyboard_hide() {
 	keyboardshown = false;
 	::hideKeyboard();
-}
-
-bool kinc_keyboard_active() {
-	return keyboardshown;
 }
 
 void loadURL(const char* url);
@@ -120,7 +120,9 @@ const char* kinc_system_id() {
 }
 
 namespace {
-	const char* getSavePath() {
+	const char* savePath = nullptr;
+
+	void getSavePath() {
 		NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
 		NSString* resolvedPath = [paths objectAtIndex:0];
 		NSString* appName = [NSString stringWithUTF8String:kinc_application_name()];
@@ -132,12 +134,13 @@ namespace {
 		[fileMgr createDirectoryAtPath:resolvedPath withIntermediateDirectories:YES attributes:nil error:&error];
 
 		resolvedPath = [resolvedPath stringByAppendingString:@"/"];
-		return [resolvedPath cStringUsingEncoding:1];
+		savePath = [resolvedPath cStringUsingEncoding:1];
 	}
 }
 
 const char* kinc_internal_save_path() {
-	return getSavePath();
+	if (::savePath == nullptr) getSavePath();
+	return ::savePath;
 }
 
 namespace {

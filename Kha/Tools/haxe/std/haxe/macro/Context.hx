@@ -19,16 +19,10 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package haxe.macro;
 
 import haxe.macro.Expr;
 import haxe.macro.Type.TypedExpr;
-
-enum Message {
-	Info(msg:String, pos:Position);
-	Warning(msg:String, pos:Position);
-}
 
 /**
 	Context provides an API for macro programming.
@@ -42,50 +36,29 @@ enum Message {
 	- `haxe.macro.TypeTools`
 **/
 class Context {
-	#if (neko || eval || display)
+
+#if (neko || eval || display)
 	/**
 		Displays a compilation error `msg` at the given `Position` `pos`
 		and aborts the current macro call.
 	**/
-	public static function error(msg:String, pos:Position):Dynamic {
-		return load("error", 2)(msg, pos);
+	public static function error( msg : String, pos : Position ) : Dynamic {
+		return load("error",2)(msg, pos);
 	}
 
 	/**
 		Displays a compilation error `msg` at the given `Position` `pos`
 		and aborts the compilation.
 	**/
-	public static function fatalError(msg:String, pos:Position):Dynamic {
-		return load("fatal_error", 2)(msg, pos);
+	public static function fatalError( msg : String, pos : Position ) : Dynamic {
+		return load("fatal_error",2)(msg, pos);
 	}
 
 	/**
 		Displays a compilation warning `msg` at the given `Position` `pos`.
 	**/
-	public static function warning(msg:String, pos:Position) {
-		load("warning", 2)(msg, pos);
-	}
-
-	/**
-		Displays a compilation info `msg` at the given `Position` `pos`.
-	**/
-	public static function info(msg:String, pos:Position) {
-		load("info", 2)(msg, pos);
-	}
-
-	/**
-		Gets a list of all current compilation info/warning messages.
-	**/
-	public static function getMessages() : Array<Message> {
-		return load("get_messages",0)();
-	}
-
-	/**
-		Filters all current info/warning messages. Filtered out messages will
-		not be displayed by the compiler.
-	**/
-	public static function filterMessages( predicate : Message -> Bool ) {
-		load("filter_messages",1)(predicate);
+	public static function warning( msg : String, pos : Position ) {
+		load("warning",2)(msg, pos);
 	}
 
 	/**
@@ -97,8 +70,8 @@ class Context {
 		If a class path was declared relative, this method returns the relative
 		file path. Otherwise it returns the absolute file path.
 	**/
-	public static function resolvePath(file:String):String {
-		return load("resolve_path", 1)(file);
+	public static function resolvePath( file : String ) : String {
+		return load("resolve_path",1)(file);
 	}
 
 	/**
@@ -108,14 +81,14 @@ class Context {
 		Modifying the returned array has no effect on the compiler. Class paths
 		can be added using `haxe.macro.Compiler.addClassPath`.
 	**/
-	public static function getClassPath():Array<String> {
-		return load("class_path", 0)();
+	public static function getClassPath() : Array<String> {
+		return load("class_path",0)();
 	}
 
 	/**
 		Returns the position at which the macro was called.
 	**/
-	public static function currentPos():Position {
+	public static function currentPos() : Position {
 		return load("current_pos", 0)();
 	}
 
@@ -147,20 +120,19 @@ class Context {
 
 		If no such class exists, `null` is returned.
 	**/
-	public static function getLocalClass():Null<Type.Ref<Type.ClassType>> {
-		var l:Type = load("get_local_type", 0)();
-		if (l == null)
-			return null;
-		return switch (l) {
-			case TInst(c, _): c;
-			default: null;
+	public static function getLocalClass() : Null<Type.Ref<Type.ClassType>> {
+		var l : Type = load("get_local_type", 0)();
+		if( l == null ) return null;
+		return switch( l ) {
+		case TInst(c,_): c;
+		default: null;
 		}
 	}
 
 	/**
 		Returns the current module path in/on which the macro was called.
 	**/
-	public static function getLocalModule():String {
+	public static function getLocalModule() : String {
 		return load("get_local_module", 0)();
 	}
 
@@ -169,7 +141,7 @@ class Context {
 
 		If no such type exists, `null` is returned.
 	**/
-	public static function getLocalType():Null<Type> {
+	public static function getLocalType() : Null<Type> {
 		return load("get_local_type", 0)();
 	}
 
@@ -178,7 +150,7 @@ class Context {
 
 		If no such method exists, `null` is returned.
 	**/
-	public static function getLocalMethod():Null<String> {
+	public static function getLocalMethod() : Null<String> {
 		return load("get_local_method", 0)();
 	}
 
@@ -188,7 +160,7 @@ class Context {
 
 		Modifying the returned array has no effect on the compiler.
 	**/
-	public static function getLocalUsing():Array<Type.Ref<Type.ClassType>> {
+	public static function getLocalUsing() : Array<Type.Ref<Type.ClassType>> {
 		return load("get_local_using", 0)();
 	}
 
@@ -197,7 +169,7 @@ class Context {
 
 		Modifying the returned array has no effect on the compiler.
 	**/
-	public static function getLocalImports():Array<ImportExpr> {
+	public static function getLocalImports() : Array<ImportExpr> {
 		return load("get_local_imports", 0)();
 	}
 
@@ -211,7 +183,7 @@ class Context {
 		Modifying the returned map has no effect on the compiler.
 	**/
 	@:deprecated("Use Context.getLocalTVars() instead")
-	public static function getLocalVars():Map<String, Type> {
+	public static function getLocalVars() : Map<String,Type> {
 		return load("local_vars", 1)(false);
 	}
 
@@ -219,7 +191,7 @@ class Context {
 		Similar to `getLocalVars`, but returns elements of type `TVar` instead
 		of `Type`.
 	**/
-	public static function getLocalTVars():Map<String, Type.TVar> {
+	public static function getLocalTVars() : Map<String,Type.TVar> {
 		return load("local_vars", 1)(true);
 	}
 
@@ -231,7 +203,7 @@ class Context {
 
 		@see https://haxe.org/manual/lf-condition-compilation.html
 	**/
-	public static function defined(s:String):Bool {
+	public static function defined( s : String ) : Bool {
 		return load("defined", 1)(s);
 	}
 
@@ -247,7 +219,7 @@ class Context {
 
 		@see https://haxe.org/manual/lf-condition-compilation.html
 	**/
-	public static function definedValue(key:String):String {
+	public static function definedValue( key : String ) : String {
 		return load("defined_value", 1)(key);
 	}
 
@@ -261,7 +233,7 @@ class Context {
 
 		@see https://haxe.org/manual/lf-condition-compilation.html
 	**/
-	public static function getDefines():Map<String, String> {
+	public static function getDefines() : Map<String,String> {
 		return load("get_defines", 0)();
 	}
 
@@ -273,7 +245,7 @@ class Context {
 
 		If no type can be found, an exception of type `String` is thrown.
 	**/
-	public static function getType(name:String):Type {
+	public static function getType( name : String ) : Type {
 		return load("get_type", 1)(name);
 	}
 
@@ -286,7 +258,7 @@ class Context {
 
 		If no module can be found, `null` is returned.
 	**/
-	public static function getModule(name:String):Array<Type> {
+	public static function getModule( name : String ) : Array<Type> {
 		return load("get_module", 1)(name);
 	}
 
@@ -298,7 +270,7 @@ class Context {
 
 		The provided `Position` `pos` is used for all generated inner AST nodes.
 	**/
-	public static function parse(expr:String, pos:Position):Expr {
+	public static function parse( expr : String, pos : Position ) : Expr {
 		return load("do_parse", 3)(expr, pos, false);
 	}
 
@@ -306,7 +278,7 @@ class Context {
 		Similar to `parse`, but error positions are reported within the provided
 		String `expr`.
 	**/
-	public static function parseInlineString(expr:String, pos:Position):Expr {
+	public static function parseInlineString( expr : String, pos : Position ) : Expr {
 		return load("do_parse", 3)(expr, pos, true);
 	}
 
@@ -319,14 +291,14 @@ class Context {
 
 		The provided `Position` `pos` is used for all generated inner AST nodes.
 	**/
-	public static function makeExpr(v:Dynamic, pos:Position):Expr {
+	public static function makeExpr( v : Dynamic, pos : Position ) : Expr {
 		return load("make_expr", 2)(v, pos);
 	}
 
 	/**
 		Returns a hashed MD5 signature of value `v`.
 	**/
-	public static function signature(v:Dynamic):String {
+	public static function signature( v : Dynamic ) : String {
 		return load("signature", 1)(v);
 	}
 
@@ -346,8 +318,8 @@ class Context {
 
 		*Note*: the callback is still invoked when generation is disabled with  `--no-output`.
 	**/
-	public static function onGenerate(callback:Array<Type>->Void, persistent:Bool = true) {
-		load("on_generate", 2)(callback, persistent);
+	public static function onGenerate( callback : Array<Type> -> Void, persistent:Bool = true ) {
+		load("on_generate",2)(callback, persistent);
 	}
 
 	/**
@@ -359,8 +331,8 @@ class Context {
 
 		*Note*: the callback is still invoked when generation is disabled with  `--no-output`.
 	**/
-	public static function onAfterGenerate(callback:Void->Void) {
-		load("on_after_generate", 1)(callback);
+	public static function onAfterGenerate( callback : Void -> Void ) {
+		load("on_after_generate",1)(callback);
 	}
 
 	/**
@@ -371,8 +343,8 @@ class Context {
 		It is possible to define new types in the callback, in which case it
 		will be called again with the new types as argument.
 	**/
-	public static function onAfterTyping(callback:Array<haxe.macro.Type.ModuleType>->Void) {
-		load("on_after_typing", 1)(callback);
+	public static function onAfterTyping( callback : Array<haxe.macro.Type.ModuleType> -> Void ) {
+		load("on_after_typing",1)(callback);
 	}
 
 	/**
@@ -383,8 +355,8 @@ class Context {
 		expected type. If it returns `null`, the type is considered to still not
 		exist.
 	**/
-	public static function onTypeNotFound(callback:String->TypeDefinition) {
-		load("on_type_not_found", 1)(callback);
+	public static function onTypeNotFound ( callback : String -> TypeDefinition ) {
+		load("on_type_not_found",1)(callback);
 	}
 
 	/**
@@ -393,7 +365,7 @@ class Context {
 		Typing the expression may result in a compiler error which can be
 		caught using `try ... catch`.
 	**/
-	public static function typeof(e:Expr):Type {
+	public static function typeof( e : Expr ) : Type {
 		return load("typeof", 1)(e);
 	}
 
@@ -403,7 +375,7 @@ class Context {
 		Typing the expression may result in a compiler error which can be
 		caught using `try ... catch`.
 	**/
-	public static function typeExpr(e:Expr):TypedExpr {
+	public static function typeExpr( e : Expr ) : TypedExpr {
 		return load("type_expr", 1)(e);
 	}
 
@@ -414,8 +386,8 @@ class Context {
 		caught using `try ... catch`.
 		Resolution is performed based on the current context in which the macro is called.
 	**/
-	public static function resolveType(t:ComplexType, p:Position):Type {
-		return load("resolve_type", 2)(t, p);
+	public static function resolveType( t : ComplexType, p : Position ) : Type {
+		return load("resolve_type", 2)(t,p);
 	}
 
 	/**
@@ -423,14 +395,14 @@ class Context {
 
 		See `haxe.macro.TypeTools.toComplexType` for details.
 	**/
-	public static function toComplexType(t:Type):Null<ComplexType> {
+	public static function toComplexType( t : Type ) : Null<ComplexType> {
 		return load("to_complex_type", 1)(t);
 	}
 
 	/**
 		Tries to unify `t1` and `t2` and returns `true` if successful.
 	**/
-	public static function unify(t1:Type, t2:Type):Bool {
+	public static function unify( t1 : Type, t2 : Type) : Bool {
 		return load("unify", 2)(t1, t2);
 	}
 
@@ -439,8 +411,8 @@ class Context {
 
 		See `haxe.macro.TypeTools.follow` for details.
 	**/
-	public static function follow(t:Type, ?once:Bool):Type {
-		return load("follow", 2)(t, once);
+	public static function follow( t : Type, ?once : Bool ) : Type {
+		return load("follow", 2)(t,once);
 	}
 
 	/**
@@ -448,22 +420,22 @@ class Context {
 
 		See `haxe.macro.TypeTools.followWithAbstracts` for details.
 	**/
-	public static function followWithAbstracts(t:Type, once:Bool = false):Type {
-		return load("follow_with_abstracts", 2)(t, once);
+	public static function followWithAbstracts(t : Type, once : Bool = false ) : Type {
+		return load("follow_with_abstracts", 2)(t,once);
 	}
 
 	/**
 		Returns the information stored in `Position` `p`.
 	**/
-	public static function getPosInfos(p:Position):{min:Int, max:Int, file:String} {
-		return load("get_pos_infos", 1)(p);
+	public static function getPosInfos( p : Position ) : { min : Int, max : Int, file : String } {
+		return load("get_pos_infos",1)(p);
 	}
 
 	/**
 		Builds a `Position` from `inf`.
 	**/
-	public static function makePosition(inf:{min:Int, max:Int, file:String}):Position {
-		return load("make_position", 3)(inf.min, inf.max, inf.file);
+	public static function makePosition( inf : { min : Int, max : Int, file : String } ) : Position {
+		return load("make_position",3)(inf.min,inf.max,inf.file);
 	}
 
 	/**
@@ -472,8 +444,8 @@ class Context {
 		Modifying the returned map has no effect on the compilation, use
 		`haxe.macro.Context.addResource` to add new resources to the compilation unit.
 	**/
-	public static function getResources():Map<String, haxe.io.Bytes> {
-		return load("get_resources", 0)();
+	public static function getResources():Map<String,haxe.io.Bytes> {
+		return load("get_resources",0)();
 	}
 
 	/**
@@ -488,8 +460,8 @@ class Context {
 		that module is reused. If this resource concerns several modules, prefix its
 		name with a `$` sign, this will bind it to the macro module instead.
 	**/
-	public static function addResource(name:String, data:haxe.io.Bytes) {
-		load("add_resource", 2)(name, data);
+	public static function addResource( name : String, data : haxe.io.Bytes ) {
+		load("add_resource",2)(name,data);
 	}
 
 	/**
@@ -497,7 +469,7 @@ class Context {
 
 		This is only defined for `@:build/@:autoBuild` macros.
 	**/
-	public static function getBuildFields():Array<Field> {
+	public static function getBuildFields() : Array<Field> {
 		return load("get_build_fields", 0)();
 	}
 
@@ -508,7 +480,7 @@ class Context {
 		a module path that will be used as a dependency for the newly defined module
 		instead of the current module.
 	**/
-	public static function defineType(t:TypeDefinition, ?moduleDependency:String):Void {
+	public static function defineType( t : TypeDefinition, ?moduleDependency : String ) : Void {
 		load("define_type", 2)(t, moduleDependency);
 	}
 
@@ -520,11 +492,9 @@ class Context {
 		respects the `imports` and `usings` as usual, expect that imports are
 		not allowed to have `.*` wildcards or `as s` shorthands.
 	**/
-	public static function defineModule(modulePath:String, types:Array<TypeDefinition>, ?imports:Array<ImportExpr>, ?usings:Array<TypePath>):Void {
-		if (imports == null)
-			imports = [];
-		if (usings == null)
-			usings = [];
+	public static function defineModule( modulePath : String, types : Array<TypeDefinition>, ?imports: Array<ImportExpr>, ?usings : Array<TypePath> ) : Void {
+		if( imports == null ) imports = [];
+		if( usings == null ) usings = [];
 		load("define_module", 4)(modulePath, types, imports, usings);
 	}
 
@@ -533,9 +503,10 @@ class Context {
 
 		This process may lose some information.
 	**/
-	public static function getTypedExpr(t:Type.TypedExpr):Expr {
-		return load("get_typed_expr", 1)(t);
+	public static function getTypedExpr( t : Type.TypedExpr ) : Expr {
+		return load("get_typed_expr",1)(t);
 	}
+
 
 	/**
 		Store typed expression `t` internally and give a syntax-level expression
@@ -549,8 +520,8 @@ class Context {
 		the expression returned by this method in a static variable and using the
 		compilation server.
 	**/
-	public static function storeTypedExpr(t:Type.TypedExpr):Expr {
-		return load("store_typed_expr", 1)(t);
+	public static function storeTypedExpr( t : Type.TypedExpr ) : Expr {
+		return load("store_typed_expr",1)(t);
 	}
 
 	/**
@@ -568,8 +539,8 @@ class Context {
 		the expression returned by this method in a static variable and using the
 		compilation server.
 	**/
-	public static function storeExpr(e:Expr):Expr {
-		return load("store_expr", 1)(e);
+	public static function storeExpr( e : Expr ) : Expr {
+		return load("store_expr",1)(e);
 	}
 
 	/**
@@ -581,17 +552,17 @@ class Context {
 
 		Has no effect if the compilation cache is not used.
 	**/
-	public static function registerModuleDependency(modulePath:String, externFile:String) {
-		load("register_module_dependency", 2)(modulePath, externFile);
+	public static function registerModuleDependency( modulePath : String, externFile : String ) {
+		load("register_module_dependency", 2)(modulePath,externFile);
 	}
 
 	@:deprecated
-	public static function registerModuleReuseCall(modulePath:String, macroCall:String) {
+	public static function registerModuleReuseCall( modulePath : String, macroCall : String ) {
 		throw "This method is no longer supported. See https://github.com/HaxeFoundation/haxe/issues/5746";
 	}
 
 	@:deprecated
-	public static function onMacroContextReused(callb:Void->Bool) {
+	public static function onMacroContextReused( callb : Void -> Bool ) {
 		throw "This method is no longer supported. See https://github.com/HaxeFoundation/haxe/issues/5746";
 	}
 
@@ -599,7 +570,7 @@ class Context {
 	@:allow(haxe.macro.MacroStringTools)
 	@:allow(haxe.macro.TypedExprTools)
 	@:allow(haxe.macro.PositionTools)
-	static function load(f:String, nargs:Int):Dynamic {
+	static function load(f:String, nargs:Int) : Dynamic {
 		#if neko
 		return neko.Lib.load("macro", f, nargs);
 		#elseif eval
@@ -609,12 +580,14 @@ class Context {
 		#end
 	}
 
-	private static function includeFile(file:String, position:String) {
+	private static function includeFile( file : String, position : String ) {
 		load("include_file", 2)(file, position);
 	}
 
-	private static function sExpr(e:TypedExpr, pretty:Bool):String {
+	private static function sExpr( e : TypedExpr, pretty : Bool ) : String {
 		return haxe.macro.Context.load("s_expr", 2)(e, pretty);
 	}
-	#end
+
+#end
+
 }

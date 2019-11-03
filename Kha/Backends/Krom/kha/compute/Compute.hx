@@ -77,7 +77,7 @@ class Compute {
 
 	public static function setTexture(unit: TextureUnit, texture: Image, access: Access) {
 		if (texture == null) return;
-		texture.texture_ != null ? Krom.setTextureCompute(unit, texture.texture_, access) : Krom.setRenderTargetCompute(unit, texture.renderTarget_, access);
+		texture.texture_ != null ? Krom.setTextureCompute(unit, texture.texture_, access.getIndex()) : Krom.setRenderTargetCompute(unit, texture.renderTarget_, access.getIndex());
 	}
 
 	public static function setSampledTexture(unit: TextureUnit, texture: Image) {

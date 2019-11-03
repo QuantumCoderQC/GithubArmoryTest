@@ -37,6 +37,7 @@
 	<https://haxe.org/manual/std-regex.html>
 **/
 class EReg {
+
 	/**
 		Creates a new regular expression with pattern `r` and modifiers `opt`.
 
@@ -44,7 +45,7 @@ class EReg {
 
 		If `r` or `opt` are null, the result is unspecified.
 	**/
-	public function new(r:String, opt:String) {
+	public function new( r : String, opt : String ) {
 		throw "Regular expressions are not implemented for this platform";
 	}
 
@@ -55,7 +56,7 @@ class EReg {
 
 		If `s` is `null`, the result is unspecified.
 	**/
-	public function match(s:String):Bool {
+	public function match( s : String ) : Bool {
 		return false;
 	}
 
@@ -70,7 +71,7 @@ class EReg {
 
 		If `n` equals 0, the whole matched substring is returned.
 	**/
-	public function matched(n:Int):String {
+	public function matched( n : Int ) : String {
 		return null;
 	}
 
@@ -85,7 +86,7 @@ class EReg {
 
 		The result does not include the matched part.
 	**/
-	public function matchedLeft():String {
+	public function matchedLeft() : String {
 		return null;
 	}
 
@@ -100,7 +101,7 @@ class EReg {
 
 		The result does not include the matched part.
 	**/
-	public function matchedRight():String {
+	public function matchedRight() : String {
 		return null;
 	}
 
@@ -115,7 +116,7 @@ class EReg {
 		If the global g modifier was in place for the matching, the position and
 		length of the leftmost substring is returned.
 	**/
-	public function matchedPos():{pos:Int, len:Int} {
+	public function matchedPos() : { pos : Int, len : Int } {
 		return null;
 	}
 
@@ -130,7 +131,7 @@ class EReg {
 
 		If `s` is null, the result is unspecified.
 	**/
-	public function matchSub(s:String, pos:Int, len:Int = -1):Bool {
+	public function matchSub( s : String, pos : Int, len : Int = -1):Bool {
 		return false;
 	}
 
@@ -152,7 +153,7 @@ class EReg {
 
 		If `s` is null, the result is unspecified.
 	**/
-	public function split(s:String):Array<String> {
+	public function split( s : String ) : Array<String> {
 		return null;
 	}
 
@@ -170,7 +171,7 @@ class EReg {
 
 		If `s` or `by` are null, the result is unspecified.
 	**/
-	public function replace(s:String, by:String):String {
+	public function replace( s : String, by : String ) : String {
 		return null;
 	}
 
@@ -188,7 +189,7 @@ class EReg {
 
 		If `s` or `f` are null, the result is unspecified.
 	**/
-	public function map(s:String, f:EReg->String):String {
+	public function map( s : String, f : EReg -> String ) : String {
 		return null;
 	}
 
@@ -197,7 +198,7 @@ class EReg {
 
 		If `s` is null, the result is unspecified.
 	**/
-	public static function escape(s:String):String {
+	public static function escape( s : String ) : String {
 		return null;
 	}
 }

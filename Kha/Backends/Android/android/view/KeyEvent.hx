@@ -11,5 +11,4 @@ extern class KeyEvent {
 	public static var KEYCODE_VOLUME_UP: Int;
 	public function isAltPressed(): Bool;
 	public function getKeyCode(): Int;
-    public function getUnicodeChar(): Int;
 }

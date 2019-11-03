@@ -1,11 +1,8 @@
 package kha.audio2;
 
 import kha.Sound;
-import kha.internal.IntBox;
 
 class Audio {
-	public static var disableGcInteractions = false;
-	static var intBox: IntBox = new IntBox(0);
 	private static var buffer: Buffer;
 
 	public static function _init() {
@@ -16,8 +13,7 @@ class Audio {
 	public static function _callCallback(samples: Int): Void {
 		if (buffer == null) return;
 		if (audioCallback != null) {
-			intBox.value = samples;
-			audioCallback(intBox, buffer);
+			audioCallback(samples, buffer);
 		}
 		else {
 			for (i in 0...samples) {
@@ -42,7 +38,7 @@ class Audio {
 
 	public static var samplesPerSecond: Int;
 
-	public static var audioCallback: IntBox->Buffer->Void;
+	public static var audioCallback: Int->Buffer->Void;
 
 	public static function stream(sound: Sound, loop: Bool = false): kha.audio1.AudioChannel {
 		return null;

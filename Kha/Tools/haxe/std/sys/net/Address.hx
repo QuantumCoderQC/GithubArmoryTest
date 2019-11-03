@@ -19,17 +19,15 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package sys.net;
 
 /**
-	An address is used to represent a port on a given host ip.
+	An address is used to represent a port on a given host ip. 
 	It is used by `sys.net.UdpSocket`.
 **/
 class Address {
-	public var host:Int;
-	public var port:Int;
-
+	public var host : Int;
+	public var port : Int;
 	public function new() {
 		host = 0;
 		port = 0;
@@ -41,13 +39,11 @@ class Address {
 		return h;
 	}
 
-	public function compare(a:Address) {
+	public function compare( a : Address ) {
 		var dh = a.host - host;
-		if (dh != 0)
-			return dh;
+		if( dh != 0 ) return dh;
 		var dp = a.port - port;
-		if (dp != 0)
-			return dp;
+		if( dp != 0 ) return dp;
 		return 0;
 	}
 
@@ -57,4 +53,5 @@ class Address {
 		c.port = port;
 		return c;
 	}
+
 }

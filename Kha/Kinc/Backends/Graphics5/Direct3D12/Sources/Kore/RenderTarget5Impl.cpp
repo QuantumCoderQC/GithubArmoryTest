@@ -69,22 +69,14 @@ void kinc_g5_render_target_init(kinc_g5_render_target_t *render_target, int widt
 	render_target->texHeight = render_target->height = height;
 	render_target->impl.stage = 0;
 	render_target->impl.stage_depth = -1;
-	render_target->impl.renderTargetReadback = nullptr;
 
 	render_target->impl.resourceState = RenderTargetResourceStateUndefined;
 
 	DXGI_FORMAT dxgiFormat = convertFormat(format);
 
-	D3D12_CLEAR_VALUE clearValue;
-	clearValue.Format = dxgiFormat;
-	clearValue.Color[0] = 0.0f;
-	clearValue.Color[1] = 0.0f;
-	clearValue.Color[2] = 0.0f;
-	clearValue.Color[3] = 1.0f;
-
 	device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
 	    &CD3DX12_RESOURCE_DESC::Tex2D(dxgiFormat, render_target->texWidth, render_target->texHeight, 1, 1, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET),
-	                                D3D12_RESOURCE_STATE_COMMON, &clearValue, IID_GRAPHICS_PPV_ARGS(&render_target->impl.renderTarget));
+	                                D3D12_RESOURCE_STATE_COMMON, nullptr, IID_GRAPHICS_PPV_ARGS(&render_target->impl.renderTarget));
 
 	D3D12_RENDER_TARGET_VIEW_DESC view;
 	const D3D12_RESOURCE_DESC resourceDesc = render_target->impl.renderTarget->GetDesc();
@@ -142,6 +134,23 @@ void kinc_g5_render_target_init(kinc_g5_render_target_t *render_target, int widt
 
 		device->CreateDepthStencilView(render_target->impl.depthStencilTexture, nullptr,
 		                               render_target->impl.depthStencilDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+		D3D12_DESCRIPTOR_HEAP_DESC srvDepthHeapDesc = {};
+		srvDepthHeapDesc.NumDescriptors = 1;
+		srvDepthHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+		srvDepthHeapDesc.NodeMask = 0;
+		srvDepthHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		device->CreateDescriptorHeap(&srvDepthHeapDesc, IID_GRAPHICS_PPV_ARGS(&render_target->impl.srvDepthDescriptorHeap));
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDepthViewDesc = {};
+		srvDepthViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		srvDepthViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+		srvDepthViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		srvDepthViewDesc.Texture2D.MipLevels = 1;
+		srvDepthViewDesc.Texture2D.MostDetailedMip = 0;
+		srvDepthViewDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+		device->CreateShaderResourceView(render_target->impl.depthStencilTexture, &srvDepthViewDesc,
+		                                 render_target->impl.srvDepthDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
 	}
 	else {
 		render_target->impl.depthStencilDescriptorHeap = nullptr;

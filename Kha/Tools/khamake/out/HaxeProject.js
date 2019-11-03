@@ -10,18 +10,6 @@ function copyAndReplace(from, to, names, values) {
     }
     fs.writeFileSync(to, data, { encoding: 'utf8' });
 }
-function escapeXml(s) {
-    return s.replace(/[<>&'"]/g, c => {
-        switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '\'': return '&apos;';
-            case '"': return '&quot;';
-            default: throw 'unreachable code';
-        }
-    });
-}
 function IntelliJ(projectdir, options) {
     let indir = path.join(__dirname, '..', 'Data', 'intellij');
     let outdir = path.join(projectdir, options.safeName + '-' + options.system + '-intellij');
@@ -298,7 +286,7 @@ function FlashDevelop(projectdir, options) {
     }
     def += '-D kha_output=&quot;' + path.resolve(path.join(projectdir, options.to)) + '&quot;&#xA;';
     for (let param of options.parameters) {
-        def += escapeXml(param) + '&#xA;';
+        def += param + '&#xA;';
     }
     let project = {
         n: 'project',

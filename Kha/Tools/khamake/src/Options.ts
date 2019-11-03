@@ -42,5 +42,5 @@ export class Options {
 	wmv: string;
 	theora: string;
 
-	slowgc: boolean;
+	haxe3: boolean;
 }

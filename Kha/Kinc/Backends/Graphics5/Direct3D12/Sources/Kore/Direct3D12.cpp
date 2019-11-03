@@ -50,12 +50,8 @@ ID3D12Resource* depthStencilTexture;
 ID3D12CommandQueue* commandQueue;
 IDXGISwapChain* swapChain;
 
-extern "C" {
-	int renderTargetWidth;
-	int renderTargetHeight;
-	int newRenderTargetWidth;
-	int newRenderTargetHeight;
-}
+int renderTargetWidth;
+int renderTargetHeight;
 
 using namespace Kore;
 
@@ -296,8 +292,8 @@ void kinc_g5_init(int window, int depthBufferBits, int stencilBufferBits, bool v
 	HWND hwnd = nullptr;
 #endif
 	vsync = verticalSync;
-	newRenderTargetWidth = renderTargetWidth = kinc_width();
-	newRenderTargetHeight = renderTargetHeight = kinc_height();
+	renderTargetWidth = kinc_width();
+	renderTargetHeight = kinc_height();
 	initialize(renderTargetWidth, renderTargetHeight, hwnd);
 }
 
@@ -358,16 +354,6 @@ void kinc_g5_begin(kinc_g5_render_target_t *renderTarget, int window) {
 
 	currentBackBuffer = (currentBackBuffer + 1) % QUEUE_SLOT_COUNT;
 
-	if (newRenderTargetWidth != renderTargetWidth || newRenderTargetHeight != renderTargetHeight) {
-		depthStencilDescriptorHeap->Release();
-		depthStencilTexture->Release();
-		kinc_microsoft_affirm(swapChain->ResizeBuffers(2, newRenderTargetWidth, newRenderTargetHeight, DXGI_FORMAT_R8G8B8A8_UNORM, 0));
-		setupSwapChain();
-		renderTargetWidth = newRenderTargetWidth;
-		renderTargetHeight = newRenderTargetHeight;
-		currentBackBuffer = 0;
-	}
-
 	const UINT64 fenceValue = currentFenceValue;
 	commandQueue->Signal(frameFences[currentBackBuffer], fenceValue);
 	fenceValues[currentBackBuffer] = fenceValue;
@@ -401,11 +387,7 @@ extern "C" bool kinc_window_vsynced(int window) {
 	return true;
 }
 
-extern "C" void kinc_internal_resize(int window, int width, int height) {
-	if (width == 0 || height == 0) return;
-	newRenderTargetWidth = width;
-	newRenderTargetHeight = height;
-}
+extern "C" void kinc_internal_resize(int window, int width, int height) {}
 
 extern "C" void kinc_internal_change_framebuffer(int window, kinc_framebuffer_options_t *frame) {}
 

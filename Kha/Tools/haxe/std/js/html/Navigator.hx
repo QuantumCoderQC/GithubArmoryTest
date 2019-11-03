@@ -88,7 +88,6 @@ extern class Navigator {
 		Returns a `ServiceWorkerContainer` object, which provides access to registration, removal, upgrade, and communication with the `ServiceWorker` objects for the associated document.
 	**/
 	var serviceWorker(default,null) : ServiceWorkerContainer;
-	var clipboard(default,null) : Clipboard;
 	var hardwareConcurrency(default,null) : Int;
 
 	/**

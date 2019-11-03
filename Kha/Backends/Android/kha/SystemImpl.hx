@@ -67,8 +67,7 @@ class SystemImpl {
 	}
 
 	public static function getLanguage(): String {
-		final lang = java.util.Locale.getDefault().getLanguage();
-		return lang.substr(0, 2).toLowerCase();
+		return java.util.Locale.getDefault().getLanguage();
 	}
 
 	public static function requestShutdown(): Bool {
@@ -257,11 +256,6 @@ class SystemImpl {
 
 		}
 	}
-	
-	public static function keyPress(char: String): Void {
-        	keyboard.sendPressEvent(char);
-    	}
-	
 
 	public static var showKeyboard: Bool;
 
@@ -304,21 +298,5 @@ class SystemImpl {
 
 	public static function safeZone(): Float {
 		return 1.0;
-	}
-
-	public static function login(): Void {
-
-	}
-
-	public static function automaticSafeZone(): Bool {
-		return true;
-	}
-
-	public static function setSafeZone(value: Float): Void {
-
-	}
-
-	public static function unlockAchievement(id: Int): Void {
-
 	}
 }

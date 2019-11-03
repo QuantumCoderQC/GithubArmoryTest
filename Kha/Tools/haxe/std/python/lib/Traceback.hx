@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package python.lib;
 
 import python.lib.Sys;
@@ -28,8 +27,10 @@ import python.Tuple;
 
 @:pythonImport("traceback")
 extern class Traceback {
+
 	public static function extract_stack(?f:Frame, ?limit:Int):Array<StackItem>;
 	public static function extract_tb(tb:Sys.TB, ?limit:Int):Array<StackItem>;
+
 }
 
 private typedef StackItem = Tuple4<String, Int, String, String>;

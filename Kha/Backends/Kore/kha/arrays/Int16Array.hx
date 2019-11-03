@@ -10,7 +10,7 @@ import haxe.ds.Vector;
 extern class Int16ArrayData {
 	@:native("int16array")
 	public static function create(): Int16ArrayData;
-
+	
 	public var length(get, never): Int;
 
 	@:native("length")
@@ -19,22 +19,21 @@ extern class Int16ArrayData {
 	public function alloc(elements: Int): Void;
 
 	public function free(): Void;
-
+	
 	public function get(index: Int): Int;
-
+		
 	public function set(index: Int, value: Int): Int;
 }
 
 class Int16ArrayPrivate {
-	@:keep public var self: Int16ArrayData;
+	public var self: Int16ArrayData;
 
 	public inline function new(elements: Int = 0) {
 		self = Int16ArrayData.create();
 		if (elements > 0) {
 			self.alloc(elements);
+			Gc.setFinalizer(this, cpp.Function.fromStaticFunction(finalize));
 		}
-
-		Gc.setFinalizer(this, cpp.Function.fromStaticFunction(finalize));
 	}
 
 	@:void static function finalize(arr: Int16ArrayPrivate): Void {
@@ -50,21 +49,21 @@ abstract Int16Array(Int16ArrayPrivate) {
 	public inline function free(): Void {
 		this.self.free();
 	}
-
+	
 	public var length(get, never): Int;
 
 	inline function get_length(): Int {
 		return this.self.length;
 	}
-
+	
 	public inline function set(index: Int, value: Int): Int {
 		return this.self.set(index, value);
 	}
-
+	
 	public inline function get(index: Int): Int {
 		return this.self.get(index);
 	}
-
+	
 	@:arrayAccess
 	public inline function arrayRead(index: Int): Int {
 		return this.self.get(index);

@@ -58,3 +58,4 @@ abstract Thread(NativeThread) {
 		return this;
 	}
 }
+

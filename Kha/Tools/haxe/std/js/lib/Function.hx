@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package js.lib;
 
 import haxe.extern.Rest;
@@ -27,7 +26,7 @@ import haxe.extern.Rest;
 @:native("Function")
 extern class Function {
 	/** Specifies the number of arguments expected by the function. **/
-	var length(default, never):Int;
+	var length(default,never):Int;
 
 	/** The name of the function. **/
 	var name:String;

@@ -923,7 +923,7 @@ HL_PRIM void hl_dyn_seti( vdynamic *d, int hfield, hl_type *t, int value ) {
 			vdynamic tmp;
 			tmp.t = t;
 			tmp.v.i = value;
-			hl_write_dyn(addr,ft,&tmp,true);
+			hl_write_dyn(addr,ft,&tmp);
 		}
 		break;
 	}
@@ -939,7 +939,7 @@ HL_PRIM void hl_dyn_setf( vdynamic *d, int hfield, float value ) {
 		vdynamic tmp;
 		tmp.t = &hlt_f32;
 		tmp.v.f = value;
-		hl_write_dyn(addr,t,&tmp,true);
+		hl_write_dyn(addr,t,&tmp);
 	}
 }
 
@@ -953,7 +953,7 @@ HL_PRIM void hl_dyn_setd( vdynamic *d, int hfield, double value ) {
 		vdynamic tmp;
 		tmp.t = &hlt_f64;
 		tmp.v.d = value;
-		hl_write_dyn(addr,t,&tmp,true);
+		hl_write_dyn(addr,t,&tmp);
 	}
 }
 
@@ -964,12 +964,12 @@ HL_PRIM void hl_dyn_setp( vdynamic *d, int hfield, hl_type *t, void *value ) {
 	if( hl_same_type(t,ft) || (hl_is_ptr(ft) && value == NULL) )
 		*(void**)addr = value;
 	else if( hl_is_dynamic(t) )
-		hl_write_dyn(addr,ft,(vdynamic*)value,false);
+		hl_write_dyn(addr,ft,(vdynamic*)value);
 	else {
 		vdynamic tmp;
 		tmp.t = t;
 		tmp.v.ptr = value;
-		hl_write_dyn(addr,ft,&tmp, true);
+		hl_write_dyn(addr,ft,&tmp);
 	}
 }
 
@@ -994,10 +994,29 @@ HL_PRIM void hl_obj_set_field( vdynamic *obj, int hfield, vdynamic *v ) {
 		hl_dyn_setp(obj,hfield,&hlt_dyn,NULL);
 		return;
 	}
-	hl_track_call(HL_TRACK_DYNFIELD, on_dynfield(obj,hfield));
-	hl_type *ft = NULL;
-	void *addr = hl_obj_lookup_set(obj,hfield,v->t,&ft);
-	hl_write_dyn(addr,ft,v,false);
+	switch( v->t->kind ) {
+	case HUI8:
+		hl_dyn_seti(obj,hfield,v->t,v->v.ui8);
+		break;
+	case HUI16:
+		hl_dyn_seti(obj,hfield,v->t,v->v.ui16);
+		break;
+	case HI32:
+		hl_dyn_seti(obj,hfield,v->t,v->v.i);
+		break;
+	case HBOOL:
+		hl_dyn_seti(obj,hfield,v->t,v->v.b);
+		break;
+	case HF32:
+		hl_dyn_setf(obj,hfield,v->v.f);
+		break;
+	case HF64:
+		hl_dyn_setd(obj,hfield,v->v.d);
+		break;
+	default:
+		hl_dyn_setp(obj,hfield,v->t,hl_is_dynamic(v->t)?v:v->v.ptr);
+		break;
+	}
 }
 
 HL_PRIM bool hl_obj_has_field( vdynamic *obj, int hfield ) {

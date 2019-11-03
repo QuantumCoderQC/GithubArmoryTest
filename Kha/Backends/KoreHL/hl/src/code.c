@@ -125,7 +125,7 @@ static const char *hl_read_string( hl_reader *r ) {
 	int i = INDEX();
 	if( i < 0 || i >= r->code->nstrings ) {
 		ERROR("Invalid string index");
-		return "";
+		i = 0;
 	}
 	return r->code->strings[i];
 }

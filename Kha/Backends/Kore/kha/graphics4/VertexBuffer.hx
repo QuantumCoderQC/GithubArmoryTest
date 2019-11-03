@@ -14,7 +14,7 @@ import kha.graphics4.VertexStructure;
 @:headerClassCode("Kore::Graphics4::VertexBuffer* buffer;")
 class VertexBuffer {
 	private var data: Float32Array;
-	@:keep private var dataInt16: Int16Array;
+	private var dataInt16: Int16Array;
 
 	public function new(vertexCount: Int, structure: VertexStructure, usage: Usage, instanceDataStepRate: Int = 0, canRead: Bool = false) {
 		init(vertexCount, structure, usage, instanceDataStepRate);
@@ -94,7 +94,7 @@ class VertexBuffer {
 		return lockInt16Private(start, count);
 	}
 
-	@:functionCode('buffer->unlock(count); data->self.data = nullptr; if (!hx::IsNull(dataInt16)) dataInt16->self.data = nullptr;')
+	@:functionCode('buffer->unlock(count);')
 	function unlockPrivate(count: Int): Void {
 
 	}

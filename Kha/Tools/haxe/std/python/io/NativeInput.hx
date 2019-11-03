@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package python.io;
 
 import haxe.io.Eof;
@@ -29,27 +28,27 @@ import python.lib.io.IOBase;
 import python.lib.io.RawIOBase;
 
 class NativeInput<T:IOBase> extends Input {
+
 	var stream:T;
 	var wasEof:Bool;
 
-	function new(s:T) {
+	function new (s:T) {
 		this.stream = s;
 		this.bigEndian = false;
 		wasEof = false;
-		if (!stream.readable())
-			throw "Write-only stream";
+		if (!stream.readable()) throw "Write-only stream";
 	}
 
-	public var canSeek(get, never):Bool;
+	public var canSeek(get,never):Bool;
+	inline function get_canSeek():Bool return stream.seekable();
 
-	inline function get_canSeek():Bool
-		return stream.seekable();
-
-	override public function close():Void {
+	override public function close():Void
+	{
 		stream.close();
 	}
 
-	public function tell():Int {
+	public function tell() : Int
+	{
 		return stream.tell();
 	}
 
@@ -62,16 +61,16 @@ class NativeInput<T:IOBase> extends Input {
 		return wasEof;
 	}
 
-	function readinto(b:Bytearray):Int {
+	function readinto (b:Bytearray):Int {
 		throw "abstract method, should be overridden";
 	}
 
-	function seek(p:Int, mode:sys.io.FileSeek) {
+	function seek (p:Int, mode:sys.io.FileSeek) {
 		throw "abstract method, should be overridden";
 	}
 
 	override public function readBytes(s:haxe.io.Bytes, pos:Int, len:Int):Int {
-		if (pos < 0 || len < 0 || pos + len > s.length)
+		if( pos < 0 || len < 0 || pos + len > s.length )
 			throw haxe.io.Error.OutsideBounds;
 
 		var ba = new Bytearray(len);

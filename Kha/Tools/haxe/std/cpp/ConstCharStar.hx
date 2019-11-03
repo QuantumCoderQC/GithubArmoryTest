@@ -19,20 +19,19 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+ package cpp;
 
-package cpp;
+extern abstract ConstCharStar( RawConstPointer<Char> ) to(RawConstPointer<Char>)
+{
+   inline function new(s:String) this = untyped s.__s;
 
-extern abstract ConstCharStar(RawConstPointer<Char>) to(RawConstPointer<Char>) {
-	inline function new(s:String)
-		this = untyped s.__s;
+   @:from
+   static public inline function fromString(s:String):ConstCharStar return new ConstCharStar(s);
 
-	@:from
-	static public inline function fromString(s:String):ConstCharStar
-		return new ConstCharStar(s);
+   @:to extern
+   public inline function toString():String return new String(untyped this);
 
-	@:to extern public inline function toString():String
-		return new String(untyped this);
-
-	@:to extern public inline function toPointer():RawConstPointer<Char>
-		return this;
+    @:to extern
+    public inline function toPointer():RawConstPointer<Char> return this;
 }
+

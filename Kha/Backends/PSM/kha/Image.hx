@@ -132,8 +132,4 @@ class Image {
 	public static function get_nonPow2Supported(): Bool {
 		return true;
 	}
-	
-	public static function renderTargetsInvertedY(): Bool {
-		return false;
-	}
 }

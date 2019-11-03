@@ -24,7 +24,7 @@ static kha_index_t next_index = 1;
 static kha_file_reference_t *loading_files = NULL;
 static kha_file_reference_t *loaded_files = NULL;
 
-static bool string_ends_with(char *str, const char *end) {
+static bool string_ends_with(char *str, char *end) {
 	size_t str_len = strlen(str);
 	size_t end_len = strlen(end);
 	if (end_len > str_len) {
@@ -56,7 +56,7 @@ static void run(void* param) {
 				kinc_file_reader_t reader;
 				if (kinc_file_reader_open(&reader, next.name, KINC_FILE_TYPE_ASSET)) {
 					next.data.blob.size = kinc_file_reader_size(&reader);
-					next.data.blob.bytes = (uint8_t*)malloc(next.data.blob.size);
+					next.data.blob.bytes = malloc(next.data.blob.size);
 					kinc_file_reader_read(&reader, next.data.blob.bytes, next.data.blob.size);
 					kinc_file_reader_close(&reader);
 				}
@@ -68,16 +68,12 @@ static void run(void* param) {
 			case KHA_FILE_TYPE_IMAGE: {
 				kinc_image_t image;
 				size_t size = kinc_image_size_from_file(next.name);
-				if (size > 0) {
-					void *data = malloc(size);
-					if (kinc_image_init_from_file(&image, data, next.name) != 0) {
-						next.data.image.image = image;
-					}
-					else {
-						free(data);
-						next.error = true;
-					}
-				} else {
+				void *data = malloc(size);
+				if (kinc_image_init_from_file(&image, data, next.name) != 0) {
+					next.data.image.image = image;
+				}
+				else {
+					free(data);
 					next.error = true;
 				}
 				break;
@@ -107,7 +103,6 @@ static void run(void* param) {
 					next.data.sound.channels = sound->format.channels;
 					next.data.sound.sample_rate = sound->format.samples_per_second;
 					next.data.sound.length = (sound->size / (sound->format.bits_per_sample / 8) / sound->format.channels) / (float)sound->format.samples_per_second;
-					kinc_a1_sound_destroy(sound);
 				}
 				break;
 			}
@@ -134,7 +129,7 @@ static void run(void* param) {
 void kha_loader_init() {
 	kinc_mutex_init(&loaded_mutex);
 	kinc_mutex_init(&loading_mutex);
-	kinc_event_init(&event, false);
+	kinc_event_init(&event);
 	kinc_thread_init(&thread, run, NULL);
 }
 
@@ -200,13 +195,4 @@ kha_file_reference_t kha_loader_get_file() {
 		memset(&file, 0, sizeof(file));
 		return file;
 	}
-}
-
-void kha_loader_cleanup_blob(kha_blob_t blob) {
-	free(blob.bytes);
-}
-
-void kha_loader_cleanup_sound(kha_sound_t sound) {
-	// sound.samples is transferred to a Float32Array in LoaderImpl.hx and will go into hxcpp GC
-	free(sound.compressed_samples);
 }

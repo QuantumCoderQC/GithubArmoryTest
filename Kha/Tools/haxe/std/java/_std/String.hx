@@ -19,40 +19,43 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+
 @:coreApi extern class String implements java.lang.CharSequence {
-	var length(default, null):Int;
 
-	@:overload(function(b:haxe.io.BytesData, offset:Int, length:Int, charsetName:String):Void {})
-	@:overload(function(b:haxe.io.BytesData, offset:Int, length:Int):Void {})
-	@:overload(function(b:java.NativeArray<java.StdTypes.Char16>):Void {})
-	function new(string:String):Void;
+	var length(default,null) : Int;
 
-	function toUpperCase():String;
+	@:overload(function(b:haxe.io.BytesData, offset:Int, length:Int, charsetName:String):Void { })
+	@:overload(function(b:haxe.io.BytesData, offset:Int, length:Int):Void { })
+	@:overload(function(b:java.NativeArray<java.StdTypes.Char16>):Void { })
+	function new(string:String) : Void;
 
-	function toLowerCase():String;
+	function toUpperCase() : String;
 
-	function charAt(index:Int):String;
+	function toLowerCase() : String;
 
-	function charCodeAt(index:Int):Null<Int>;
+	function charAt( index : Int) : String;
 
-	function indexOf(str:String, ?startIndex:Int):Int;
+	function charCodeAt( index : Int) : Null<Int>;
 
-	function lastIndexOf(str:String, ?startIndex:Int):Int;
+	function indexOf( str : String, ?startIndex : Int ) : Int;
 
-	function split(delimiter:String):Array<String>;
+	function lastIndexOf( str : String, ?startIndex : Int ) : Int;
 
-	function substr(pos:Int, ?len:Int):String;
+	function split( delimiter : String ) : Array<String>;
 
-	function substring(startIndex:Int, ?endIndex:Int):String;
+	function substr( pos : Int, ?len : Int ) : String;
 
-	function toString():String;
+	function substring( startIndex : Int, ?endIndex : Int ) : String;
 
-	private function compareTo(anotherString:String):Int;
+	function toString() : String;
 
-	private function codePointAt(idx:Int):Int;
+	private function compareTo( anotherString : String ) : Int;
 
-	@:overload(function():haxe.io.BytesData {})
-	private function getBytes(encoding:String):haxe.io.BytesData;
+	private function codePointAt( idx : Int ) : Int;
 
-	static function fromCharCode(code:Int):String;
+	@:overload(function() : haxe.io.BytesData { })
+	private function getBytes(encoding:String) : haxe.io.BytesData;
+
+	static function fromCharCode( code : Int ) : String;
+
 }

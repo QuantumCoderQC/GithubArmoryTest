@@ -4,7 +4,6 @@ const Html5Exporter_1 = require("./Html5Exporter");
 class DebugHtml5Exporter extends Html5Exporter_1.Html5Exporter {
     constructor(options) {
         super(options);
-        this.isDebug = true;
     }
 }
 exports.DebugHtml5Exporter = DebugHtml5Exporter;

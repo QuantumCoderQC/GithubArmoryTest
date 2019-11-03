@@ -3,12 +3,6 @@
 
 #include "QuickVec.h"
 
-#ifdef HXCPP_SINGLE_THREADED_APP
-  #define HX_CTX_GET hx::gMainThreadContext
-#else
-  #define HX_CTX_GET ((hx::StackContext *)hx::tlsStackContext)
-#endif
-
 // Set:
 // HXCPP_STACK_LINE if stack line numbers need to be tracked
 // HXCPP_STACK_TRACE if stack frames need to be tracked
@@ -86,11 +80,12 @@
    #define HX_LOCAL_STACK_FRAME(a,b,c,d,e,f,g,h)
    #define HX_STACK_FRAME(className, functionName, classFunctionHash, fullName,fileName, lineNumber, fileHash )
    #define HX_STACKFRAME(pos)
-   #define HX_JUST_GC_STACKFRAME hx::StackContext *_hx_ctx = HX_CTX_GET;
+   #define HX_JUST_GC_STACKFRAME hx::StackContext *_hx_ctx = hx::gMultiThreadMode ? hx::tlsStackContext : hx::gMainThreadContext;
    #define HX_GC_STACKFRAME(pos) HX_JUST_GC_STACKFRAME
    #define HX_CTX _hx_ctx
 #endif
 
+#define HX_CTX_GET (hx::gMultiThreadMode ? hx::tlsStackContext : hx::gMainThreadContext)
 #define HX_GC_CTX HX_CTX
 
 
@@ -441,8 +436,7 @@ struct StackContext : public hx::ImmixAllocator
    MarkChunk *mOldReferrers;
    inline void pushReferrer(hx::Object *inObj)
    {
-      // If collector is running on non-generational mode, mOldReferrers will be null
-      if (mOldReferrers)
+      //if (mOldReferrers)
       {
          mOldReferrers->push(inObj);
          if (mOldReferrers->count==MarkChunk::SIZE)
@@ -538,7 +532,7 @@ struct StackContext : public hx::ImmixAllocator
 
    static inline StackContext *getCurrent()
    {
-      return HX_CTX_GET;
+      return hx::gMultiThreadMode ? hx::tlsStackContext : hx::gMainThreadContext;
    }
 
    #ifdef HXCPP_STACK_IDS
@@ -657,7 +651,7 @@ public:
           #endif
 
 
-          ctx =  HX_CTX_GET;
+          ctx =  hx::gMultiThreadMode ? hx::tlsStackContext : hx::gMainThreadContext;
           ctx->pushFrame(this);
        }
 
@@ -676,7 +670,7 @@ public:
        // Release version only has ctx
        inline StackFrame()
        {
-          ctx =  HX_CTX_GET;
+          ctx =  hx::gMultiThreadMode ? hx::tlsStackContext : hx::gMainThreadContext;
        }
 
    #endif // }
@@ -694,7 +688,10 @@ class JustGcStackFrame
 {
 public:
    StackContext        *ctx;
-   inline JustGcStackFrame() : ctx(HX_CTX_GET) { }
+   inline JustGcStackFrame()
+   {
+      ctx =  hx::gMultiThreadMode ? hx::tlsStackContext : hx::gMainThreadContext;
+   }
 };
 
 

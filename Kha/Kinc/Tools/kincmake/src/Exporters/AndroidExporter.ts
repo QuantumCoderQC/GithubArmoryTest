@@ -16,7 +16,6 @@ interface TargetOptions {
 	screenOrientation: string;
 	permissions: string[];
 	disableStickyImmersiveMode: boolean;
-	metadata: string[];
 	customFilesPath?: string;
 	buildGradlePath: string;
 	globalBuildGradlePath: string;
@@ -43,7 +42,6 @@ export class AndroidExporter extends Exporter {
 			screenOrientation: 'sensor',
 			permissions: new Array<string>(),
 			disableStickyImmersiveMode: false,
-			metadata: new Array<string>(),
 			customFilesPath: null,
 			buildGradlePath: path.join(indir, 'app', 'build.gradle'),
 			globalBuildGradlePath: path.join(indir, 'build.gradle'),
@@ -74,16 +72,14 @@ export class AndroidExporter extends Exporter {
 		fs.copySync(path.join(indir, 'gradle.properties'), path.join(outdir, 'gradle.properties'));
 		fs.copySync(path.join(indir, 'gradlew'), path.join(outdir, 'gradlew'));
 		fs.copySync(path.join(indir, 'gradlew.bat'), path.join(outdir, 'gradlew.bat'));
-		let settings = fs.readFileSync(path.join(indir, 'settings.gradle'), 'utf8');
-		settings = settings.replace(/{name}/g, project.getName());
-		fs.writeFileSync(path.join(outdir, 'settings.gradle'), settings);
+		fs.copySync(path.join(indir, 'settings.gradle'), path.join(outdir, 'settings.gradle'));
 
 		fs.copySync(path.join(indir, 'app', 'gitignore'), path.join(outdir, 'app', '.gitignore'));
 		fs.copySync(targetOptions.proguardRulesPath, path.join(outdir, 'app', 'proguard-rules.pro'));
 
 		this.writeAppGradle(project, outdir, from, targetOptions);
 
-		this.writeCMakeLists(project, indir, outdir, from, targetOptions);
+		this.writeCMakeLists(project, indir, outdir, targetOptions);
 
 		fs.ensureDirSync(path.join(outdir, 'app', 'src'));
 		// fs.emptyDirSync(path.join(outdir, 'app', 'src'));
@@ -159,7 +155,7 @@ export class AndroidExporter extends Exporter {
 		fs.writeFileSync(path.join(outdir, 'app', 'build.gradle'), gradle);
 	}
 
-	writeCMakeLists(project: Project, indir: string, outdir: string, from: string, targetOptions: TargetOptions) {
+	writeCMakeLists(project: Project, indir: string, outdir: string, targetOptions: TargetOptions) {
 		let cmake = fs.readFileSync(path.join(indir, 'app', 'CMakeLists.txt'), 'utf8');
 
 		let debugDefines = '';
@@ -188,12 +184,7 @@ export class AndroidExporter extends Exporter {
 		for (let file of project.getFiles()) {
 			if (file.file.endsWith('.c') || file.file.endsWith('.cc')
 					|| file.file.endsWith('.cpp') || file.file.endsWith('.h')) {
-				if (path.isAbsolute(file.file)) {
-					files += '  "' + path.resolve(file.file).replace(/\\/g, '/') + '"\n';
-				}
-				else {
-					files += '  "' + path.resolve(path.join(from, file.file)).replace(/\\/g, '/') + '"\n';
-				}
+				files += '  "' + path.resolve(file.file).replace(/\\/g, '/') + '"\n';
 			}
 		}
 		cmake = cmake.replace(/{files}/g, files);
@@ -226,11 +217,7 @@ export class AndroidExporter extends Exporter {
 		manifest = manifest.replace(/{versionName}/g, targetOptions.versionName);
 		manifest = manifest.replace(/{screenOrientation}/g, targetOptions.screenOrientation);
 		manifest = manifest.replace(/{permissions}/g, targetOptions.permissions.map((p) => { return '\n\t<uses-permission android:name="' + p + '"/>'; }).join(''));
-		let metadata = targetOptions.disableStickyImmersiveMode ? '\n\t\t<meta-data android:name="disableStickyImmersiveMode" android:value="true"/>' : '';
-		for (const meta of targetOptions.metadata) {
-			metadata += '\n\t\t' + meta;
-		}
-		manifest = manifest.replace(/{metadata}/g, metadata);
+		manifest = manifest.replace(/{metadata}/g, targetOptions.disableStickyImmersiveMode ? '\n\t\t<meta-data android:name="disableStickyImmersiveMode" android:value="true"/>' : '');
 		fs.ensureDirSync(path.join(outdir, 'app', 'src', 'main'));
 		fs.writeFileSync(path.join(outdir, 'app', 'src', 'main', 'AndroidManifest.xml'), manifest);
 	}

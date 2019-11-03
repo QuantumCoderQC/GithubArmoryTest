@@ -19,18 +19,16 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+ package cpp;
 
-package cpp;
+abstract CastCharStar( RawPointer<Char> ) to(RawPointer<Char>)
+{
+   inline function new(s:String) this = cast untyped s.__s;
 
-abstract CastCharStar(RawPointer<Char>) to(RawPointer<Char>) {
-	inline function new(s:String)
-		this = cast untyped s.__s;
+   @:from
+   static public inline function fromString(s:String) return new CastCharStar(s);
 
-	@:from
-	static public inline function fromString(s:String)
-		return new CastCharStar(s);
-
-	@:to
-	public inline function toPointer()
-		return this;
+    @:to
+    public inline function toPointer() return this;
 }
+

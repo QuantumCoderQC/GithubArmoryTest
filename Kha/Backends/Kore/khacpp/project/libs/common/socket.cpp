@@ -53,8 +53,10 @@
 #	define MSG_NOSIGNAL 0
 #endif
 
-#ifndef KORE_CONSOLE
 static SERR block_error() {
+#ifdef KORE_CONSOLE
+	return PS_ERROR;
+#else
 #ifdef OS_WINDOWS
 	int err = WSAGetLastError();
 	if( err == WSAEWOULDBLOCK || err == WSAEALREADY )
@@ -63,8 +65,8 @@ static SERR block_error() {
 #endif
 		return PS_BLOCK;
 	return PS_ERROR;
-}
 #endif
+}
 
 void psock_init() {
 #if defined(OS_WINDOWS) && !defined(KORE_CONSOLE)
@@ -78,7 +80,7 @@ void psock_init() {
 PSOCK psock_create() {
    AutoGCBlocking block;
 #ifdef KORE_CONSOLE
-   return INVALID_SOCKET;
+	return NULL;
 #else
 	PSOCK s = socket(AF_INET,SOCK_STREAM,0);
 #	if defined(OS_MAC) || defined(OS_BSD)

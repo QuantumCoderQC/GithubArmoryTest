@@ -19,17 +19,18 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package python.lib;
 
 abstract TermiosSettings(Dynamic) {}
 
-@:pythonImport("termios", ignoreError = true)
+@:pythonImport("termios", ignoreError=true)
 extern class Termios {
-	public static var TCSADRAIN:Int;
-	public static var ECHO:Int;
 
-	public static function tcgetattr(fileNo:Int):TermiosSettings;
+	public static var TCSADRAIN : Int;
+	public static var ECHO : Int;
 
-	public static function tcsetattr(fileNo:Int, when:Int, settings:TermiosSettings):Void;
+	public static function tcgetattr (fileNo:Int):TermiosSettings;
+
+	public static function tcsetattr (fileNo:Int, when:Int, settings:TermiosSettings):Void;
+
 }

@@ -48,10 +48,6 @@ class Compiler
    public var mPCHFilename:String;
    public var mPCH:String;
 
-   public var mRcExe:String;
-   public var mRcExt:String;
-   public var mRcFlags:Array<String>;
-
    public var mGetCompilerVersion:String;
    public var mCompilerVersion:String;
    public var mCompilerVersionString:String;
@@ -74,7 +70,6 @@ class Compiler
       mPCHFlags = [];
       mAddGCCIdentity = inGCCFileTypes;
       mCompilerVersion = null;
-      mRcExt = ".res";
       mObjDir = "obj";
       mOutFlag = "-o";
       mExe = inExe;
@@ -85,7 +80,6 @@ class Compiler
       mPCHUse = "-Yu";
       mPCHFilename = "/Fp";
       mCached = false;
-      mRcFlags = [];
    }
 
    public function getFlagStrings()
@@ -172,14 +166,12 @@ class Compiler
    function getArgs(inFile:File)
    {
       var nvcc = inFile.isNvcc();
-      var isRc = mRcExe!=null && inFile.isResource();
       var args = nvcc ? inFile.mGroup.mCompilerFlags.concat( BuildTool.getNvccFlags() ) :
                        inFile.mCompilerFlags.concat(inFile.mGroup.mCompilerFlags);
       var tagFilter = inFile.getTags().split(",");
       addOptimTags(tagFilter);
-      if (!isRc)
-         for(flag in mFlags)
-            flag.add(args,tagFilter);
+      for(flag in mFlags)
+         flag.add(args,tagFilter);
       var ext = mExt.toLowerCase();
       var ext = new Path(inFile.mName).ext;
       if (ext!=null)
@@ -193,8 +185,6 @@ class Compiler
       var allowPch = false;
       if (nvcc)
          args = args.concat(mNvccFlags);
-      else if (isRc)
-         args = args.concat(mRcFlags);
       else if (ext=="c")
          args = args.concat(mCFlags);
       else if (ext=="m")
@@ -207,7 +197,7 @@ class Compiler
          args = args.concat(mCPPFlags);
       }
 
-      if (isRc || inFile.getTags()!=inFile.mGroup.getTags())
+      if (inFile.getTags()!=inFile.mGroup.getTags())
          allowPch = false;
 
       if (inFile.mGroup.isPrecompiled() && allowPch)
@@ -298,9 +288,6 @@ class Compiler
       var args = getArgs(inFile);
       var nvcc = inFile.isNvcc();
       var exe = nvcc ? BuildTool.getNvcc() : mExe;
-      var isRc =  mRcExe!=null && inFile.isResource();
-      if (isRc)
-         exe = mRcExe;
 
       var found = false;
       var cacheName:String = null;
@@ -337,7 +324,6 @@ class Compiler
             headerFunc();
 
          var tmpFile:String = null;
-         var delayedFilename:String = null;
 
          if (inFile.mEmbedName!=null)
          {
@@ -349,10 +335,7 @@ class Compiler
          }
          else
          {
-            if (isRc)
-               delayedFilename = (new Path( inFile.mDir + inFile.mName)).toString();
-            else
-               args.push( (new Path( inFile.mDir + inFile.mName)).toString() );
+            args.push( (new Path( inFile.mDir + inFile.mName)).toString() );
          }
 
          var out = nvcc ? "-o " : mOutFlag;
@@ -363,9 +346,6 @@ class Compiler
          }
 
          args.push(out + obj_name);
-
-         if (delayedFilename!=null)
-           args.push(delayedFilename);
 
          var tagInfo = inFile.mTags==null ? "" : " " + inFile.mTags.split(",");
 
@@ -456,12 +436,10 @@ class Compiler
 
    function getObjName(inFile:File)
    {
-      var isRc = mRcExe!=null && inFile.isResource();
-
       var path = new Path(inFile.mName);
       var dirId = Md5.encode(BuildTool.targetKey + path.dir + inFile.mGroup.mId).substr(0,8) + "_";
 
-      return PathManager.combine(mObjDir, inFile.mGroup.mObjPrefix + dirId + path.file + (isRc ? mRcExt : mExt) );
+      return PathManager.combine(mObjDir, inFile.mGroup.mObjPrefix + dirId + path.file + mExt);
    }
 
    function getHashedName(inFile:File, args:Array<String>)

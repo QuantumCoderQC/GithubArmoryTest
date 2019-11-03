@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package haxe.macro;
 
 /**
@@ -32,8 +31,8 @@ package haxe.macro;
 	- `haxe.macro.MacroStringTools`
 	- `haxe.macro.TypedExprTools`
 	- `haxe.macro.PositionTools`
-
-	  @see <https://haxe.org/manual/lf-static-extension.html>
+  
+  @see <https://haxe.org/manual/lf-static-extension.html>
 **/
 @:dox(hide)
 typedef TExprTools = ExprTools;

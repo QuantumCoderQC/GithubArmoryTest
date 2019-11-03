@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package python.internal;
 
 @:ifFeature("has_throw")
@@ -27,7 +26,6 @@ package python.internal;
 class HxException extends python.Exceptions.Exception {
 	@:ifFeature("has_throw")
 	public var val:Dynamic;
-
 	@:ifFeature("has_throw")
 	public function new(val:Dynamic) {
 		var message = UBuiltins.str(val);

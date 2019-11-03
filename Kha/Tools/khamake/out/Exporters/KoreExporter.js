@@ -11,7 +11,6 @@ const ImageTool_1 = require("../ImageTool");
 class KoreExporter extends KhaExporter_1.KhaExporter {
     constructor(options) {
         super(options);
-        this.slowgc = options.slowgc;
         // Files.removeDirectory(this.directory.resolve(Paths.get(this.sysdir() + "-build", "Sources")));
     }
     backend() {
@@ -19,9 +18,8 @@ class KoreExporter extends KhaExporter_1.KhaExporter {
     }
     haxeOptions(name, targetOptions, defines) {
         defines.push('no-compilation');
-        defines.push('include-prefix=hxinc');
-        if (!this.slowgc) {
-            defines.push('HXCPP_GC_GENERATIONAL');
+        if (!this.options.haxe3) {
+            defines.push('include-prefix=hxinc');
         }
         defines.push('sys_' + this.options.target);
         defines.push('sys_kore');

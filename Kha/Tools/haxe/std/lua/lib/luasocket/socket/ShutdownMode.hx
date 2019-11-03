@@ -21,9 +21,8 @@
  */
 
 package lua.lib.luasocket.socket;
-
-enum abstract ShutdownMode(String) {
-	var Both = "both";
-	var Send = "send";
+enum abstract ShutdownMode(String)  {
+	var Both    = "both";
+	var Send    = "send";
 	var Receive = "receive";
 }

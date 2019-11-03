@@ -19,7 +19,6 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package python.io;
 
 import python.io.NativeBytesInput;
@@ -29,7 +28,7 @@ import python.lib.io.IOBase.SeekSet;
 import python.lib.io.TextIOBase;
 
 class FileTextInput extends NativeTextInput implements IFileInput {
-	public function new(stream:TextIOBase) {
+	public function new (stream:TextIOBase) {
 		super(stream);
 	}
 }

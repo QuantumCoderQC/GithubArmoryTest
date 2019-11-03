@@ -11,7 +11,6 @@ import {VrApi} from '../VrApi';
 export class Html5Exporter extends KhaExporter {
 	width: number;
 	height: number;
-	isDebug: boolean;
 
 	constructor(options: Options) {
 		super(options);
@@ -22,7 +21,7 @@ export class Html5Exporter extends KhaExporter {
 	}
 
 	isADebugTarget() {
-		return this.isDebug;
+		return this.sysdir().indexOf('debug') !== -1;
 	}
 
 	isDebugHtml5() {
@@ -212,7 +211,7 @@ export class Html5Exporter extends KhaExporter {
 		let ogg = await convert(from, path.join(this.options.to, this.sysdir(), to + '.ogg'), this.options.ogg);
 		let mp4 = false;
 		let mp3 = false;
-		if (!this.isADebugTarget()) {
+		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.aac);
 			if (!mp4) {
 				mp3 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp3'), this.options.mp3);
@@ -231,14 +230,14 @@ export class Html5Exporter extends KhaExporter {
 	}
 
 	async copyBlob(platform: string, from: string, to: string, options: any) {
-		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true, dereference: true });
+		fs.copySync(from.toString(), path.join(this.options.to, this.sysdir(), to), { overwrite: true });
 		return [to];
 	}
 
 	async copyVideo(platform: string, from: string, to: string, options: any) {
 		fs.ensureDirSync(path.join(this.options.to, this.sysdir(), path.dirname(to)));
 		let mp4 = false;
-		if (!this.isADebugTarget()) {
+		if (!this.isDebugHtml5()) {
 			mp4 = await convert(from, path.join(this.options.to, this.sysdir(), to + '.mp4'), this.options.h264);
 		}
 		let webm = await convert(from, path.join(this.options.to, this.sysdir(), to + '.webm'), this.options.webm);

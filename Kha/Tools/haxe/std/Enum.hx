@@ -29,4 +29,5 @@
 
 	@see https://haxe.org/manual/types-enum-instance.html
 **/
-@:coreType @:runtimeValue abstract Enum<T> {}
+@:coreType @:runtimeValue abstract Enum<T> {
+}

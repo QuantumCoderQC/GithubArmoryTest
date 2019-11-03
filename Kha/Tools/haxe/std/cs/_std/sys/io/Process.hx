@@ -19,9 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-
 package sys.io;
-
 import haxe.io.BytesInput;
 import cs.system.io.StreamReader;
 import cs.system.io.StreamWriter;
@@ -30,15 +28,16 @@ import cs.system.diagnostics.ProcessStartInfo as NativeStartInfo;
 
 @:coreApi
 class Process {
-	public var stdout(default, null):haxe.io.Input;
-	public var stderr(default, null):haxe.io.Input;
-	public var stdin(default, null):haxe.io.Output;
+
+	public var stdout(default,null) : haxe.io.Input;
+	public var stderr(default,null) : haxe.io.Input;
+	public var stdin(default, null) : haxe.io.Output;
 
 	private var native:NativeProcess;
 
-	public function new(cmd:String, ?args:Array<String>, ?detached:Bool):Void {
-		if (detached)
-			throw "Detached process is not supported on this platform";
+	public function new( cmd : String, ?args : Array<String>, ?detached : Bool ) : Void
+	{
+		if( detached ) throw "Detached process is not supported on this platform";
 		this.native = createNativeProcess(cmd, args);
 		native.Start();
 
@@ -48,7 +47,7 @@ class Process {
 	}
 
 	@:allow(Sys)
-	private static function createNativeProcess(cmd:String, ?args:Array<String>):NativeProcess {
+	private static function createNativeProcess( cmd : String, ?args : Array<String> ) : NativeProcess {
 		var native = new NativeProcess();
 		native.StartInfo.CreateNoWindow = true;
 		native.StartInfo.RedirectStandardError = native.StartInfo.RedirectStandardInput = native.StartInfo.RedirectStandardOutput = true;
@@ -81,7 +80,7 @@ class Process {
 			case "Windows":
 				[
 					for (a in args)
-						haxe.SysTools.quoteWinArg(a, false)
+					haxe.SysTools.quoteWinArg(a, false)
 				].join(" ");
 			case _:
 				// mono uses a slightly different quoting/escaping rule...
@@ -95,7 +94,7 @@ class Process {
 							switch (c) {
 								case '"'.code | '\\'.code:
 									b.addChar('\\'.code);
-								case _: // pass
+								case _: //pass
 							}
 							b.addChar(c);
 						}
@@ -106,22 +105,27 @@ class Process {
 		}
 	}
 
-	public function getPid():Int {
+	public function getPid() : Int
+	{
 		return native.Id;
 	}
 
-	public function exitCode(block:Bool = true):Null<Int> {
-		if (block == false && !native.HasExited)
+	public function exitCode( block : Bool = true ) : Null<Int>
+	{
+		if( block == false && !native.HasExited )
 			return null;
 		native.WaitForExit();
 		return native.ExitCode;
 	}
 
-	public function close():Void {
+	public function close() : Void
+	{
 		native.Close();
 	}
 
-	public function kill():Void {
+	public function kill() : Void
+	{
 		native.Kill();
 	}
+
 }

@@ -2,7 +2,6 @@ package kha;
 
 import haxe.io.Bytes;
 import js.html.ImageElement;
-import js.html.CanvasElement;
 import js.html.webgl.GL;
 import kha.graphics4.TextureFormat;
 import kha.graphics4.DepthStencilFormat;
@@ -24,21 +23,6 @@ class Image implements Canvas implements Resource {
 		if (format == null) format = TextureFormat.RGBA32;
 		if (SystemImpl.gl == null) return new CanvasImage(width, height, format, true);
 		else return new WebGLImage(width, height, format, true, depthStencil, antiAliasingSamples);
-	}
-
-	public static function fromCanvas(canvas: CanvasElement): Image {
-		if (SystemImpl.gl == null) {
-			var img = new CanvasImage(canvas.width, canvas.height, TextureFormat.RGBA32, false);
-			img.image = canvas;
-			img.createTexture();
-			return img;
-		}
-		else {
-			var img = new WebGLImage(canvas.width, canvas.height, TextureFormat.RGBA32, false, DepthStencilFormat.NoDepthAndStencil, 1);
-			img.image = canvas;
-			img.createTexture();
-			return img;
-		}
 	}
 
 	public static function fromImage(image: ImageElement, readable: Bool): Image {
@@ -110,10 +94,6 @@ class Image implements Canvas implements Resource {
 
 	public static function get_nonPow2Supported(): Bool {
 		return SystemImpl.gl != null;
-	}
-	
-	public static function renderTargetsInvertedY(): Bool {
-		return true;
 	}
 
 	public function isOpaque(x: Int, y: Int): Bool {

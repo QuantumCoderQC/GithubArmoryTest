@@ -3,7 +3,6 @@ package kha.audio2;
 import flash.events.Event;
 import flash.events.SampleDataEvent;
 import flash.media.SoundTransform;
-import kha.internal.IntBox;
 
 class HardwareAudioChannel implements kha.audio1.AudioChannel {
 	private var music: flash.media.Sound;
@@ -72,8 +71,6 @@ class HardwareAudioChannel implements kha.audio1.AudioChannel {
 }
 
 class Audio {
-	public static var disableGcInteractions = false;
-	static var intBox: IntBox = new IntBox(0);
 	private static var buffer: Buffer;
 	private static inline var bufferSize = 4096;
 	
@@ -88,8 +85,7 @@ class Audio {
 	
 	private static function onSampleData(event: SampleDataEvent): Void {
 		if (audioCallback != null) {
-			intBox.value = bufferSize * 2;
-			audioCallback(intBox, buffer);
+			audioCallback(bufferSize * 2, buffer);
 			for (i in 0...bufferSize) {
 				event.data.writeFloat(buffer.data.get(buffer.readLocation));
 				buffer.readLocation += 1;
@@ -110,7 +106,7 @@ class Audio {
 
 	public static var samplesPerSecond: Int;
 	
-	public static var audioCallback: IntBox->Buffer->Void;
+	public static var audioCallback: Int->Buffer->Void;
 	
 	public static function stream(sound: Sound, loop: Bool = false): kha.audio1.AudioChannel {
 		var flashSound: kha.flash.Sound = cast sound;
